@@ -1,18 +1,38 @@
-'use client'
-import { useEffect } from 'react';
-import io from 'socket.io-client';
+'use client';
+import { useEffect, useState } from 'react';
+import io, { Socket } from 'socket.io-client';
 
 export default function Home() {
-  useEffect(() => {
-    const socket = io('http://localhost:5000'); // Replace with your server URL
-    
-    // Socket.IO event listeners and emission logic can be placed here
+	const [sock, setSocket] = useState<Socket | null>();
+	const [id, setId] = useState('');
 
-    return () => {
-        socket.disconnect(); // Disconnect the socket when component unmounts
-    };
-}, []);
-  return (
-   <main></main>
-  );
+	useEffect(() => {
+		const newSocket = io('http://localhost:5000'); // Create socket instance
+
+		newSocket.on('connect', () => {
+			console.log('Connected to server'); // Log connection status
+		});
+
+		newSocket.on('disconnect', () => {
+			console.log('Disconnected from server'); // Log disconnection status
+		});
+
+		newSocket.on('UserID', (message) => {
+			setId(message);
+		});
+
+		setSocket(newSocket); // Store socket instance in state
+
+		return () => {
+			newSocket.disconnect(); // Disconnect on cleanup
+		};
+	}, []);
+
+	return (
+		<main>
+			<button onClick={() => sock?.emit('message', `Hello There ${id}`)}>
+				Hello
+			</button>
+		</main>
+	);
 }
