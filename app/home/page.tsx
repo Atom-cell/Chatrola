@@ -14,7 +14,7 @@ export default function Home() {
 		});
 
 		newSocket.on('disconnect', () => {
-			console.log('Disconnected from server');
+			console.log('Disconnected from server ');
 		});
 
 		newSocket.on('UserID', (message) => {
