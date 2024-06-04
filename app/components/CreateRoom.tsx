@@ -1,7 +1,11 @@
 'use client';
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation'
+
 
 const CreateRoom = () => {
+	const router = useRouter();
+
 	const [email, setEmail] = useState('');
 	return (
 		<div>
@@ -12,7 +16,7 @@ const CreateRoom = () => {
 				value={email}
 				onChange={(e:React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
 			/>
-            <button>Let&apos;s Go</button>
+            <button onClick={() => router.push('/home')}>Let&apos;s Go</button>
 		</div>
 	);
 };

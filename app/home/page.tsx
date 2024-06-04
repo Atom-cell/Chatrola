@@ -1,4 +1,5 @@
 'use client';
+import { IncomingMessage } from 'http';
 import { useEffect, useState, ChangeEvent } from 'react';
 import io, { Socket } from 'socket.io-client';
 
@@ -6,7 +7,8 @@ export default function Home() {
 	const [socket, setSocket] = useState<Socket | null>();
 	const [id, setId] = useState('');
 	const [msgInput, setMsgInput] = useState("");
-	const [message, setMessage] = useState<string []>([])
+	const [message, setMessage] = useState<string []>([]);
+	const [room, setRoom] = useState("");
 
 	useEffect(() => {
 		const newSocket = io('http://localhost:5000');
@@ -30,6 +32,7 @@ export default function Home() {
 		};
 	}, []);
 
+	// Receiving message
 	useEffect(() => {
         if (socket) {
             const handleMessage = (socketMessage: string) => {
@@ -45,10 +48,25 @@ export default function Home() {
         }
     }, [socket, message]);
 
-	const sendMessage= () => {
-		socket?.emit('sendmessage', msgInput);
-		setMsgInput("");
-	}
+	// sending message
+	// const sendMessage= () => {
+	// 	// { to: id, message: msgInput }
+	// 	socket?.emit('sendmessage', msgInput);
+	// 	setMsgInput("");
+	// }
+
+	const sendMessage = () => {
+        if (msgInput !== '' && room !== '' && socket) {
+            socket.emit('sendmessage', { room, msg: msgInput });
+            setMsgInput("");
+        }
+    };
+
+	const joinRoom = () => {
+        if (room !== '' && socket) {
+            socket.emit('join room', room);
+        }
+    };
 
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -59,6 +77,16 @@ export default function Home() {
 	
 	return (
 		<main>
+			<div className="border-2 border-teal-300 mb-10">
+				<input type="text" value={room} onChange={(e: ChangeEvent<HTMLInputElement>) => setRoom(e.target.value)} className="text-black"/>
+				<button
+					className='bg-gray-500 p-2 m-2 hover:bg-gray-400'
+					onClick={() => joinRoom()}
+				>
+					Connect Room
+				</button>
+			</div>
+
 			<input type="text" value={msgInput} onKeyDown={handleKeyDown} onChange={(e: ChangeEvent<HTMLInputElement>) => setMsgInput(e.target.value)} className="text-black"/>
 			<button
 				className='bg-gray-500 p-2 m-2 hover:bg-gray-400'
