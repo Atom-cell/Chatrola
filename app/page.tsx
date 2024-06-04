@@ -1,11 +1,11 @@
-import React from 'react'
-import CreateRoom from './components/CreateRoom'
+import React from 'react';
+import CreateRoom from './components/CreateRoom';
 const page = () => {
-  return (
-	<div>
-		<CreateRoom/>
-	</div>
-  )
-}
+	return (
+		<div>
+			<CreateRoom />
+		</div>
+	);
+};
 
-export default page
+export default page;
