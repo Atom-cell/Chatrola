@@ -3,7 +3,7 @@ import { IncomingMessage } from 'http';
 import { useEffect, useState, ChangeEvent } from 'react';
 import io, { Socket } from 'socket.io-client';
 
-export default function Home() {
+export default function Home({params}:{params: {roomName:string}}) {
 	const [socket, setSocket] = useState<Socket | null>();
 	const [id, setId] = useState('');
 	const [msgInput, setMsgInput] = useState("");
@@ -16,6 +16,8 @@ export default function Home() {
 		newSocket.on('connect', () => {
 			console.log('Connected to server');
 		});
+
+		newSocket.emit('join room', params.roomName);
 
 		newSocket.on('disconnect', () => {
 			console.log('Disconnected from server ');
@@ -62,11 +64,7 @@ export default function Home() {
         }
     };
 
-	const joinRoom = () => {
-        if (room !== '' && socket) {
-            socket.emit('join room', room);
-        }
-    };
+	 
 
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -77,15 +75,7 @@ export default function Home() {
 	
 	return (
 		<main>
-			<div className="border-2 border-teal-300 mb-10">
-				<input type="text" value={room} onChange={(e: ChangeEvent<HTMLInputElement>) => setRoom(e.target.value)} className="text-black"/>
-				<button
-					className='bg-gray-500 p-2 m-2 hover:bg-gray-400'
-					onClick={() => joinRoom()}
-				>
-					Connect Room
-				</button>
-			</div>
+			 
 
 			<input type="text" value={msgInput} onKeyDown={handleKeyDown} onChange={(e: ChangeEvent<HTMLInputElement>) => setMsgInput(e.target.value)} className="text-black"/>
 			<button

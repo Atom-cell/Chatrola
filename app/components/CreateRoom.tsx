@@ -1,7 +1,7 @@
 'use client';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation'
-
+import RoomNames from '../utils/RoomNames';
 
 const CreateRoom = () => {
 	const router = useRouter();
@@ -16,7 +16,7 @@ const CreateRoom = () => {
 				value={email}
 				onChange={(e:React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
 			/>
-            <button onClick={() => router.push('/home')}>Let&apos;s Go</button>
+            <button onClick={() => router.push(`/rooms/${RoomNames[Math.floor(Math.random() * 100)]}`)}>Let&apos;s Go</button>
 		</div>
 	);
 };
