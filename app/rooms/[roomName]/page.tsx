@@ -8,7 +8,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const [id, setId] = useState('');
 	const [msgInput, setMsgInput] = useState('');
 	const [message, setMessage] = useState<string[]>([]);
-	const [room, setRoom] = useState('');
 
 	useEffect(() => {
 		const newSocket = io('http://localhost:5000');
@@ -58,7 +57,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	// }
 
 	const sendMessage = () => {
-		if (msgInput !== '' && room !== '' && socket) {
+		if (msgInput !== '' && socket) {
+			let room = params.roomName;
 			socket.emit('sendmessage', { room, msg: msgInput });
 			setMsgInput('');
 		}
