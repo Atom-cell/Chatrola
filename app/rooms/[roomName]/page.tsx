@@ -1,5 +1,4 @@
 'use client';
-import { IncomingMessage } from 'http';
 import { useEffect, useState, ChangeEvent } from 'react';
 import io, { Socket } from 'socket.io-client';
 
@@ -43,6 +42,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('emitMessage', handleMessage);
 
+			socket.on('invalidToken', () => alert("INVLAUD TOKEN"));
+
 			return () => {
 				socket.off('emitMessage', handleMessage);
 			};
@@ -59,7 +60,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const sendMessage = () => {
 		if (msgInput !== '' && socket) {
 			let room = params.roomName;
-			socket.emit('sendmessage', { room, msg: msgInput });
+			socket.emit('sendmessage', { room, msg: msgInput, token: localStorage.getItem('token')});
 			setMsgInput('');
 		}
 	};
