@@ -5,7 +5,7 @@ import './globals.css';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-	title: 'Chatrola',
+	title: 'Chatrola - A quick one',
 	description: 'An instant limited chat app',
 };
 

@@ -1,8 +1,11 @@
 'use client';
 import { useEffect, useState, ChangeEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
 
 export default function Home({ params }: { params: { roomName: string } }) {
+	const router = useRouter();
+
 	const [socket, setSocket] = useState<Socket | null>();
 	const [id, setId] = useState('');
 	const [msgInput, setMsgInput] = useState('');
@@ -14,8 +17,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		newSocket.on('connect', () => {
 			console.log('Connected to server');
 		});
-
-		newSocket.emit('join room', params.roomName);
+		const token = localStorage.getItem('token');
+		newSocket.emit('join-room', { roomName: params.roomName, token: token });
 
 		newSocket.on('disconnect', () => {
 			console.log('Disconnected from server ');
@@ -23,6 +26,16 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 		newSocket.on('UserID', (message) => {
 			setId(message);
+		});
+
+		newSocket.on('roomFull', () => {
+			alert(`Room is full.`);
+			router.push('/');
+		});
+
+		newSocket.on('invalidToken', () => {
+			alert('INVLAUD TOKEN');
+			router.push('/');
 		});
 
 		setSocket(newSocket);
@@ -42,7 +55,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('emitMessage', handleMessage);
 
-			socket.on('invalidToken', () => alert("INVLAUD TOKEN"));
+			socket.on('invalidToken', () => alert('INVLAUD TOKEN'));
 
 			return () => {
 				socket.off('emitMessage', handleMessage);
@@ -60,7 +73,11 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const sendMessage = () => {
 		if (msgInput !== '' && socket) {
 			let room = params.roomName;
-			socket.emit('sendmessage', { room, msg: msgInput, token: localStorage.getItem('token')});
+			socket.emit('sendmessage', {
+				room,
+				msg: msgInput,
+				token: localStorage.getItem('token'),
+			});
 			setMsgInput('');
 		}
 	};
