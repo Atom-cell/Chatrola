@@ -7,7 +7,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
 
 	const [socket, setSocket] = useState<Socket | null>();
-	const [id, setId] = useState('');
 	const [msgInput, setMsgInput] = useState('');
 	const [message, setMessage] = useState<string[]>([]);
 
@@ -22,10 +21,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 		newSocket.on('disconnect', () => {
 			console.log('Disconnected from server ');
-		});
-
-		newSocket.on('UserID', (message) => {
-			setId(message);
 		});
 
 		newSocket.on('roomFull', () => {

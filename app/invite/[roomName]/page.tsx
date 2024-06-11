@@ -1,9 +1,10 @@
 'use client';
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const router = useRouter();
+	const searchParams = useSearchParams();
 	const [username, setUsername] = useState('');
 
 	const enterRoom = () => {
@@ -13,7 +14,8 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 			console.log('Connected to server');
 		});
 
-		newSocket.emit('generate-token', { username: username });
+		const minutes = searchParams.get('miniutes')
+		newSocket.emit('generate-token', { username: username, minutes: minutes });
 
 		newSocket.on('token-generated', (token) => {
 			localStorage.setItem('token', token);

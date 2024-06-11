@@ -9,13 +9,16 @@ const CreateRoom = () => {
 	const [email, setEmail] = useState('');
 	const [username, setUsername] = useState('');
 	const [minutes, setMinutes] = useState('');
+	const [buttonText, setButtonText] = useState("Let's Go");
+	const [roomName, setRoomName] = useState("");
 
 	const invite = async () => {
-		const roomName = RoomNames[Math.floor(Math.random() * 100)];
+		const room = RoomNames[Math.floor(Math.random() * 100)];
+		setRoomName(room);
 		const request = await fetch('http://localhost:5000/invite', {
 			method: 'POST',
 			headers: {
-				'Content-Type': 'application/json', // Set the correct Content-Type
+				'Content-Type': 'application/json',
 			},
 			body: JSON.stringify({
 				username: username,
@@ -28,7 +31,7 @@ const CreateRoom = () => {
 		const result = await request.json();
 		if (result && request.status === 200) {
 			localStorage.setItem('token', result.token);
-			router.push(`/rooms/${roomName}`);
+			setButtonText("Join Room");
 		}
 	};
 	return (
@@ -61,7 +64,7 @@ const CreateRoom = () => {
 					setMinutes(e.target.value)
 				}
 			/>
-			<button onClick={() => invite()}>Let&apos;s Go</button>
+			<button onClick={() => buttonText !== 'Join Room' ? invite() : router.push(`/rooms/${roomName}`)}>{buttonText}</button>
 		</div>
 	);
 };
