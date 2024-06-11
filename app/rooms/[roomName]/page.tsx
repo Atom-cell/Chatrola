@@ -2,6 +2,7 @@
 import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
+import Timer from '../../components/Timer';
 
 export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
@@ -9,6 +10,9 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
 	const [message, setMessage] = useState<string[]>([]);
+	const [startTimer, setStartTimer] = useState(false)
+	const minutesString = localStorage.getItem('minutes');
+	const minutes: number = minutesString !== null ? parseInt(minutesString, 10) : 0;
 
 	useEffect(() => {
 		const newSocket = io('http://localhost:5000');
@@ -21,6 +25,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 		newSocket.on('disconnect', () => {
 			console.log('Disconnected from server ');
+		});
+
+		newSocket.on('partner-joined', () => {
+			setStartTimer(true);
 		});
 
 		newSocket.on('roomFull', () => {
@@ -85,6 +93,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 	return (
 		<main>
+			<Timer minutes={minutes} startTimer={startTimer}/>
 			<input
 				type='text'
 				value={msgInput}

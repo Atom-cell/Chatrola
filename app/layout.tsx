@@ -1,8 +1,12 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Share_Tech_Mono } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Share_Tech_Mono({
+	weight: '400',
+	style: 'normal',
+	subsets: ['latin'],
+});
 
 export const metadata: Metadata = {
 	title: 'Chatrola - A quick one',

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import RoomNames from '../utils/RoomNames';
+import Timer from './Timer';
 
 const CreateRoom = () => {
 	const router = useRouter();
@@ -23,7 +24,7 @@ const CreateRoom = () => {
 			body: JSON.stringify({
 				username: username,
 				email: email,
-				roomName: roomName,
+				roomName: room,
 				minutes: minutes,
 			}),
 		});
@@ -31,12 +32,14 @@ const CreateRoom = () => {
 		const result = await request.json();
 		if (result && request.status === 200) {
 			localStorage.setItem('token', result.token);
+			localStorage.setItem('minutes', result.minutes);
 			setButtonText("Join Room");
 		}
 	};
 	return (
 		<div className='space-y-5'>
 			<p>Create Instant Room</p>
+			{/* <Timer minutes={1} /> */}
 			<input
 				type='text'
 				placeholder='Enter your name'

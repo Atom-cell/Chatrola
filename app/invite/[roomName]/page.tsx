@@ -14,8 +14,9 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 			console.log('Connected to server');
 		});
 
-		const minutes = searchParams.get('miniutes')
+		const minutes = searchParams.get('miniutes') as string;
 		newSocket.emit('generate-token', { username: username, minutes: minutes });
+		localStorage.setItem('minutes', minutes);
 
 		newSocket.on('token-generated', (token) => {
 			localStorage.setItem('token', token);

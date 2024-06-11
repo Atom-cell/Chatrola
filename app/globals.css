@@ -24,10 +24,38 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  /* display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; */
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
   }
+}
+
+h1 {
+    font-size: 2.125rem;
+    font-weight: bold;
+    line-height: 34px;
+}
+
+h2 {
+    font-size: 1.875rem;
+    font-weight: bold;
+    line-height: 32px;
+}
+
+h3 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 26px;
+}
+
+h4 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    line-height: 22px;
 }
