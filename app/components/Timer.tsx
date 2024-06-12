@@ -11,7 +11,7 @@ const Timer = ({ minutes, startTimer }: TimerProps) => {
 
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
-
+		console.log(startTimer);
 		if (startTimer && secondsRemaining > 0) {
 			intervalId = setInterval(() => {
 				setSecondsRemaining((prevSeconds) => prevSeconds - 1);

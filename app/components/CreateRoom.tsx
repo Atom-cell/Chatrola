@@ -16,24 +16,29 @@ const CreateRoom = () => {
 	const invite = async () => {
 		const room = RoomNames[Math.floor(Math.random() * 100)];
 		setRoomName(room);
-		const request = await fetch('http://localhost:5000/invite', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				username: username,
-				email: email,
-				roomName: room,
-				minutes: minutes,
-			}),
-		});
-
-		const result = await request.json();
-		if (result && request.status === 200) {
-			localStorage.setItem('token', result.token);
-			localStorage.setItem('minutes', result.minutes);
-			setButtonText("Join Room");
+		if (email && username && minutes) {
+			const request = await fetch('http://localhost:5000/invite', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					username: username,
+					email: email,
+					roomName: room,
+					minutes: minutes,
+				}),
+			});
+	
+			const result = await request.json();
+			
+			if (result && request.status === 200) {
+				localStorage.setItem('token', result.token);
+				localStorage.setItem('minutes', result.minutes);
+				setButtonText("Join Room");
+			}
+		} else {
+			console.log("Enter valid input")
 		}
 	};
 	return (

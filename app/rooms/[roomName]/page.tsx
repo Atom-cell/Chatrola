@@ -10,9 +10,14 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
 	const [message, setMessage] = useState<string[]>([]);
-	const [startTimer, setStartTimer] = useState(false)
+	const [startTimer, setStartTimer] = useState(false);
 	const minutesString = localStorage.getItem('minutes');
-	const minutes: number = minutesString !== null ? parseInt(minutesString, 10) : 0;
+	const minutes: number =
+		minutesString !== null ? parseInt(minutesString, 10) : 0;
+
+	useEffect(() => {
+		// get all messages for the room
+	}, [])
 
 	useEffect(() => {
 		const newSocket = io('http://localhost:5000');
@@ -37,7 +42,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		});
 
 		newSocket.on('invalidToken', () => {
-			alert('INVLAUD TOKEN');
+			alert('INValilD TOKEN');
 			router.push('/');
 		});
 
@@ -66,12 +71,25 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		}
 	}, [socket, message]);
 
-	// sending message
-	// const sendMessage= () => {
-	// 	// { to: id, message: msgInput }
-	// 	socket?.emit('sendmessage', msgInput);
-	// 	setMsgInput("");
-	// }
+	const deleteMessages = async (): Promise<void> => {
+		const token = localStorage.getItem('token');
+		try {
+			const deleteCall = await fetch('http://localhost:5000/chat', {
+				method: 'DELETE',
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${token}`
+				},
+				body: JSON.stringify({
+					roomName: params.roomName,
+				}),
+			});
+			const result = await deleteCall.json();
+			console.log(result);
+		} catch (error) {
+			console.log('Error in removing messages ', error);
+		}
+	};
 
 	const sendMessage = () => {
 		if (msgInput !== '' && socket) {
@@ -93,7 +111,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 	return (
 		<main>
-			<Timer minutes={minutes} startTimer={startTimer}/>
+			<button onClick={()=> deleteMessages()}>Delete</button>
+			<Timer minutes={minutes} startTimer={startTimer} />
 			<input
 				type='text'
 				value={msgInput}
