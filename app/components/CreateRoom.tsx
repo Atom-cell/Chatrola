@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import RoomNames from '../utils/RoomNames';
-import Timer from './Timer';
 
 const CreateRoom = () => {
 	const router = useRouter();

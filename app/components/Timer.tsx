@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 
 interface TimerProps {
 	minutes: number;
-	startTimer: boolean
+	startTimer: boolean;
 }
 
 const Timer = ({ minutes, startTimer }: TimerProps) => {
@@ -14,7 +14,11 @@ const Timer = ({ minutes, startTimer }: TimerProps) => {
 		console.log(startTimer);
 		if (startTimer && secondsRemaining > 0) {
 			intervalId = setInterval(() => {
-				setSecondsRemaining((prevSeconds) => prevSeconds - 1);
+				setSecondsRemaining((prevSeconds) => {
+					const newSeconds = prevSeconds - 1;
+					localStorage.setItem('seconds', newSeconds.toString());
+					return newSeconds;
+				});
 			}, 1000);
 		} else if (secondsRemaining === 0) {
 			clearInterval(intervalId!);
@@ -34,7 +38,11 @@ const Timer = ({ minutes, startTimer }: TimerProps) => {
 		return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
 	};
 
-	return <div className='text-white text-3xl font-semibold'>{formatTime(secondsRemaining)}</div>;
+	return (
+		<div className='text-white text-3xl font-semibold'>
+			{formatTime(secondsRemaining)}
+		</div>
+	);
 };
 
 export default Timer;

@@ -11,15 +11,26 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const [msgInput, setMsgInput] = useState('');
 	const [message, setMessage] = useState<string[]>([]);
 	const [startTimer, setStartTimer] = useState(false);
-	const minutesString = localStorage.getItem('minutes');
-	const minutes: number =
-		minutesString !== null ? parseInt(minutesString, 10) : 0;
+	const [minutes, setMinutes] = useState<number>();
+	// const minutesString = localStorage.getItem('minutes');
+	// 		const minutes: number = minutesString !== null ? parseInt(minutesString, 10) : 0;
 
 	useEffect(() => {
 		// get all messages for the room
-	}, [])
+	}, []);
 
 	useEffect(() => {
+		const secondsFromMemory = localStorage.getItem('seconds');
+		if (secondsFromMemory) {
+			const minutes = parseInt(secondsFromMemory, 10) / 60;
+			setMinutes(minutes);
+		} else {
+			const minutesString = localStorage.getItem('minutes');
+			const mins: number =
+				minutesString !== null ? parseInt(minutesString, 10) : 0;
+			setMinutes(mins);
+		}
+
 		const newSocket = io('http://localhost:5000');
 
 		newSocket.on('connect', () => {
@@ -27,13 +38,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		});
 		const token = localStorage.getItem('token');
 		newSocket.emit('join-room', { roomName: params.roomName, token: token });
-
-		newSocket.on('disconnect', () => {
+		const roomName = params.roomName
+		newSocket.on('disconnect', (roomName) => {
 			console.log('Disconnected from server ');
-		});
-
-		newSocket.on('partner-joined', () => {
-			setStartTimer(true);
+			// newSocket.emit('leaving-room', { roomName: params.roomName });
 		});
 
 		newSocket.on('roomFull', () => {
@@ -41,10 +49,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			router.push('/');
 		});
 
-		newSocket.on('invalidToken', () => {
-			alert('INValilD TOKEN');
-			router.push('/');
-		});
+		// newSocket.on('invalidToken', (response) => {
+		// 	alert(response);
+		// 	router.push('/');
+		// });
 
 		setSocket(newSocket);
 
@@ -63,7 +71,20 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('emitMessage', handleMessage);
 
-			socket.on('invalidToken', () => alert('INVLAUD TOKEN'));
+			socket.on('invalidToken', (response) => {
+				alert(response);
+				router.push('/');
+			});
+
+			socket.on('start-timer', () => {
+				console.log('Start timer');
+				setStartTimer(true);
+			});
+
+			socket.on('stop-timer', () => {
+				console.log('Start Timer');
+				setStartTimer(false);
+			});
 
 			return () => {
 				socket.off('emitMessage', handleMessage);
@@ -78,7 +99,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${token}`
+					Authorization: `Bearer ${token}`,
 				},
 				body: JSON.stringify({
 					roomName: params.roomName,
@@ -111,8 +132,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 	return (
 		<main>
-			<button onClick={()=> deleteMessages()}>Delete</button>
-			<Timer minutes={minutes} startTimer={startTimer} />
+			<button onClick={() => deleteMessages()}>Delete</button>
+			{minutes && <Timer minutes={minutes} startTimer={startTimer} />}
 			<input
 				type='text'
 				value={msgInput}
