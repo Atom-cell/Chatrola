@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import RoomNames from '../utils/RoomNames';
 import { setUsername, setToken, setMinutes } from '../utils/LocalStorage';
@@ -11,9 +11,10 @@ const CreateRoom = () => {
 	const [username, setUserName] = useState('');
 	const [minutes, setminutes] = useState('');
 	const [buttonText, setButtonText] = useState("Let's Go");
-	const [roomName, setRoomName] = useState("");
+	const [roomName, setRoomName] = useState('');
 
-	const invite = async () => {
+	const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
+		event.preventDefault();
 		const room = RoomNames[Math.floor(Math.random() * 100)];
 		setRoomName(room);
 		if (email && username && minutes) {
@@ -29,51 +30,60 @@ const CreateRoom = () => {
 					minutes: minutes,
 				}),
 			});
-	
+
 			const result = await request.json();
-			
+
 			if (result && request.status === 200) {
 				setUsername(username);
 				setToken(result.token);
 				setMinutes(result.minutes);
-				setButtonText("Join Room");
+				setButtonText('Join Room');
 			}
 		} else {
-			console.log("Enter valid input")
+			console.log('Enter valid input');
 		}
 	};
 	return (
-		<div className='space-y-5'>
+		<div>
 			<p>Create Instant Room</p>
 			{/* <Timer minutes={1} /> */}
-			<input
-				type='text'
-				placeholder='Enter your name'
-				value={username}
-				className='text-black'
-				onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-					setUserName(e.target.value)
-				}
-			/>
-			<input
-				type='email'
-				placeholder='Enter your friends email address'
-				value={email}
-				className='text-black block'
-				onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-					setEmail(e.target.value)
-				}
-			/>
-			<input
-				type='number'
-				placeholder='Enter your friends email address'
-				value={minutes}
-				className='text-black block'
-				onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-					setminutes(e.target.value)
-				}
-			/>
-			<button onClick={() => buttonText !== 'Join Room' ? invite() : router.push(`/rooms/${roomName}`)}>{buttonText}</button>
+			<form onSubmit={onSubmit} className='space-y-5'>
+				<input
+					type='text'
+					placeholder='Enter your name'
+					value={username}
+					className='text-black'
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+						setUserName(e.target.value)
+					}
+				/>
+				<input
+					type='email'
+					placeholder='Enter your friends email address'
+					value={email}
+					className='text-black block'
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+						setEmail(e.target.value)
+					}
+				/>
+				<input
+					type='number'
+					placeholder='Enter your friends email address'
+					value={minutes}
+					className='text-black block'
+					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+						setminutes(e.target.value)
+					}
+				/>
+				{buttonText !== 'Join Room' ? (
+					<button type='submit'>{buttonText}</button>
+				) : null}
+			</form>
+			{buttonText === 'Join Room' ? (
+				<button onClick={() => router.push(`/rooms/${roomName}`)}>
+					{buttonText}
+				</button>
+			) : null}
 		</div>
 	);
 };
