@@ -6,7 +6,7 @@ import Timer from '../../components/Timer';
 
 export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
-
+	const name = localStorage.getItem('name');
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
 	const [message, setMessage] = useState<string[]>([]);
@@ -38,10 +38,9 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		});
 		const token = localStorage.getItem('token');
 		newSocket.emit('join-room', { roomName: params.roomName, token: token });
-		const roomName = params.roomName
-		newSocket.on('disconnect', (roomName) => {
+
+		newSocket.on('disconnect', () => {
 			console.log('Disconnected from server ');
-			// newSocket.emit('leaving-room', { roomName: params.roomName });
 		});
 
 		newSocket.on('roomFull', () => {
@@ -82,7 +81,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			});
 
 			socket.on('stop-timer', () => {
-				console.log('Start Timer');
+				console.log('Stop Timer');
 				setStartTimer(false);
 			});
 
@@ -132,6 +131,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 	return (
 		<main>
+			<h2>{name}</h2>
 			<button onClick={() => deleteMessages()}>Delete</button>
 			{minutes && <Timer minutes={minutes} startTimer={startTimer} />}
 			<input

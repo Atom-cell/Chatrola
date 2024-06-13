@@ -34,6 +34,7 @@ const CreateRoom = () => {
 			if (result && request.status === 200) {
 				localStorage.setItem('token', result.token);
 				localStorage.setItem('minutes', result.minutes);
+				localStorage.setItem('name', username);
 				setButtonText("Join Room");
 			}
 		} else {
