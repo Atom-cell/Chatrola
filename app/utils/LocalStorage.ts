@@ -29,3 +29,7 @@ export const getSeconds = (): string | null => {
 export const getToken = (): string | null => {
 	return localStorage.getItem('token');
 };
+
+export const clearStorage = (): void => {
+	localStorage.clear();
+}

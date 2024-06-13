@@ -2,11 +2,11 @@
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
-import { setMinutes, setToken } from '@/app/utils/LocalStorage';
+import { setMinutes, setToken, setUsername } from '@/app/utils/LocalStorage';
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const [username, setUsername] = useState('');
+	const [username, setusername] = useState('');
 
 	const enterRoom = () => {
 		const newSocket = io('http://localhost:5000');
@@ -21,6 +21,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 
 		newSocket.on('token-generated', (token) => {
 			setToken(token)
+			setUsername(username);
 			router.push(`/rooms/${params.roomName}`);
 		});
 
@@ -36,7 +37,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 				className='text-black'
 				value={username}
 				onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-					setUsername(e.target.value)
+					setusername(e.target.value)
 				}
 			/>
 			<button onClick={() => enterRoom()}>Enter </button>

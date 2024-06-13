@@ -8,8 +8,8 @@ const CreateRoom = () => {
 	const router = useRouter();
 
 	const [email, setEmail] = useState('');
-	const [username, setUsername] = useState('');
-	const [minutes, setMinutes] = useState('');
+	const [username, setUserName] = useState('');
+	const [minutes, setminutes] = useState('');
 	const [buttonText, setButtonText] = useState("Let's Go");
 	const [roomName, setRoomName] = useState("");
 
@@ -52,7 +52,7 @@ const CreateRoom = () => {
 				value={username}
 				className='text-black'
 				onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-					setUsername(e.target.value)
+					setUserName(e.target.value)
 				}
 			/>
 			<input
@@ -70,7 +70,7 @@ const CreateRoom = () => {
 				value={minutes}
 				className='text-black block'
 				onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-					setMinutes(e.target.value)
+					setminutes(e.target.value)
 				}
 			/>
 			<button onClick={() => buttonText !== 'Join Room' ? invite() : router.push(`/rooms/${roomName}`)}>{buttonText}</button>

@@ -3,7 +3,7 @@ import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
 import Timer from '../../components/Timer';
-import { getUsername, getSeconds, getMinutes, getToken } from '@/app/utils/LocalStorage';
+import { getUsername, getSeconds, getMinutes, getToken, clearStorage } from '@/app/utils/LocalStorage';
 
 export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
@@ -41,6 +41,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		newSocket.emit('join-room', { roomName: params.roomName, token: token });
 
 		newSocket.on('disconnect', () => {
+			clearStorage();
 			console.log('Disconnected from server ');
 		});
 
@@ -105,6 +106,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				}),
 			});
 			const result = await deleteCall.json();
+			clearStorage();
 			console.log(result);
 		} catch (error) {
 			console.log('Error in removing messages ', error);
