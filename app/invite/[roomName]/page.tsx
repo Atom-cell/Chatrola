@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
+import { setMinutes, setToken } from '@/app/utils/LocalStorage';
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -16,10 +17,10 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 
 		const minutes = searchParams.get('minutes') as string;
 		newSocket.emit('generate-token', { username: username, minutes: minutes });
-		localStorage.setItem('minutes', minutes);
+		setMinutes(minutes);
 
 		newSocket.on('token-generated', (token) => {
-			localStorage.setItem('token', token);
+			setToken(token)
 			router.push(`/rooms/${params.roomName}`);
 		});
 

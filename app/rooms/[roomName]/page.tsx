@@ -3,29 +3,30 @@ import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
 import Timer from '../../components/Timer';
+import { getUsername, getSeconds, getMinutes, getToken } from '@/app/utils/LocalStorage';
 
 export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
-	const name = localStorage.getItem('name');
+	const name = getUsername();
+	const token = getToken();
+
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
 	const [message, setMessage] = useState<string[]>([]);
 	const [startTimer, setStartTimer] = useState(false);
 	const [minutes, setMinutes] = useState<number>();
-	// const minutesString = localStorage.getItem('minutes');
-	// 		const minutes: number = minutesString !== null ? parseInt(minutesString, 10) : 0;
 
 	useEffect(() => {
 		// get all messages for the room
 	}, []);
 
 	useEffect(() => {
-		const secondsFromMemory = localStorage.getItem('seconds');
+		const secondsFromMemory = getSeconds();
 		if (secondsFromMemory) {
 			const minutes = parseInt(secondsFromMemory, 10) / 60;
 			setMinutes(minutes);
 		} else {
-			const minutesString = localStorage.getItem('minutes');
+			const minutesString = getMinutes();
 			const mins: number =
 				minutesString !== null ? parseInt(minutesString, 10) : 0;
 			setMinutes(mins);
@@ -35,8 +36,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 		newSocket.on('connect', () => {
 			console.log('Connected to server');
-		});
-		const token = localStorage.getItem('token');
+		}); 
+
 		newSocket.emit('join-room', { roomName: params.roomName, token: token });
 
 		newSocket.on('disconnect', () => {
@@ -92,7 +93,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	}, [socket, message]);
 
 	const deleteMessages = async (): Promise<void> => {
-		const token = localStorage.getItem('token');
 		try {
 			const deleteCall = await fetch('http://localhost:5000/chat', {
 				method: 'DELETE',
@@ -117,7 +117,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			socket.emit('sendmessage', {
 				room,
 				msg: msgInput,
-				token: localStorage.getItem('token'),
+				token: token
 			});
 			setMsgInput('');
 		}

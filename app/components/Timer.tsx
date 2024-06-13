@@ -1,5 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react';
+import { setSeconds } from '../utils/LocalStorage';
 
 interface TimerProps {
 	minutes: number;
@@ -16,7 +17,7 @@ const Timer = ({ minutes, startTimer }: TimerProps) => {
 			intervalId = setInterval(() => {
 				setSecondsRemaining((prevSeconds) => {
 					const newSeconds = prevSeconds - 1;
-					localStorage.setItem('seconds', newSeconds.toString());
+					setSeconds(newSeconds.toString());
 					return newSeconds;
 				});
 			}, 1000);
