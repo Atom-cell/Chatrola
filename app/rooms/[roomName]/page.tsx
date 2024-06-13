@@ -41,7 +41,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		newSocket.emit('join-room', { roomName: params.roomName, token: token });
 
 		newSocket.on('disconnect', () => {
-			clearStorage();
+			// clearStorage();
 			console.log('Disconnected from server ');
 		});
 

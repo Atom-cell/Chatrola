@@ -1,8 +1,8 @@
 'use client';
-import React, { useState, FormEvent } from 'react';
+import React, { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import RoomNames from '../utils/RoomNames';
-import { setUsername, setToken, setMinutes } from '../utils/LocalStorage';
+import { setUsername, setToken, setMinutes, getRoomname, setRoomname } from '../utils/LocalStorage';
 
 const CreateRoom = () => {
 	const router = useRouter();
@@ -13,10 +13,19 @@ const CreateRoom = () => {
 	const [buttonText, setButtonText] = useState("Let's Go");
 	const [roomName, setRoomName] = useState('');
 
+	useEffect(() => {
+		const roomname = getRoomname();
+		if (roomname) router.push(`/rooms/${roomname}`);
+	} ,[]);
+
 	const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
 		const room = RoomNames[Math.floor(Math.random() * 100)];
 		setRoomName(room);
+
+		// local storage function
+		setRoomname(room);
+
 		if (email && username && minutes) {
 			const request = await fetch('http://localhost:5000/invite', {
 				method: 'POST',

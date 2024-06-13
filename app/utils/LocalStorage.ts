@@ -14,6 +14,10 @@ export const setToken = (token: string): void => {
 	localStorage.setItem('token', token);
 };
 
+export const setRoomname = (token: string): void => {
+	localStorage.setItem('room', token);
+};
+
 export const getUsername = (): string | null => {
 	return localStorage.getItem('name');
 };
@@ -33,3 +37,7 @@ export const getToken = (): string | null => {
 export const clearStorage = (): void => {
 	localStorage.clear();
 }
+
+export const getRoomname = (): string | null => {
+	return localStorage.getItem('room');
+};

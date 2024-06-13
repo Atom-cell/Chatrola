@@ -2,7 +2,12 @@
 import React, { useState, useEffect, FormEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import io from 'socket.io-client';
-import { setMinutes, setToken, setUsername } from '@/app/utils/LocalStorage';
+import {
+	setMinutes,
+	setToken,
+	setUsername,
+	getUsername,
+} from '@/app/utils/LocalStorage';
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -10,6 +15,8 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const [validInvite, setValidInvite] = useState<boolean | null>(null);
 
 	useEffect(() => {
+		console.log('CHecking ---- ');
+
 		const checkInviteExpiration = async () => {
 			const inviteToken = searchParams.get('token') as string;
 			try {
@@ -30,7 +37,9 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 			}
 		};
 
-		checkInviteExpiration();
+		const username = getUsername();
+		if (username) router.push(`/rooms/${params.roomName}`);
+		else checkInviteExpiration();
 	}, []);
 
 	const onSubmit = (event: FormEvent<HTMLFormElement>) => {
