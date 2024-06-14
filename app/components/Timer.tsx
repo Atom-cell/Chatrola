@@ -5,9 +5,10 @@ import { setSeconds } from '../utils/LocalStorage';
 interface TimerProps {
 	minutes: number;
 	startTimer: boolean;
+	kickOutUsers: () => void
 }
 
-const Timer = ({ minutes, startTimer }: TimerProps) => {
+const Timer = ({ minutes, startTimer, kickOutUsers }: TimerProps) => {
 	const [secondsRemaining, setSecondsRemaining] = useState(minutes * 60);
 
 	useEffect(() => {
@@ -24,6 +25,7 @@ const Timer = ({ minutes, startTimer }: TimerProps) => {
 		} else if (secondsRemaining === 0) {
 			clearInterval(intervalId!);
 			console.log('Time is up!');
+			kickOutUsers();
 		}
 
 		return () => {

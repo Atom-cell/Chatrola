@@ -3,24 +3,35 @@ import { useEffect, useState, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
 import Timer from '../../components/Timer';
-import { getUsername, getSeconds, getMinutes, getToken, clearStorage } from '@/app/utils/LocalStorage';
+import {
+	getUsername,
+	getSeconds,
+	getMinutes,
+	getToken,
+	clearStorage,
+} from '@/app/utils/LocalStorage';
 
 export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
-	const name = getUsername();
-	const token = getToken();
 
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
 	const [message, setMessage] = useState<string[]>([]);
 	const [startTimer, setStartTimer] = useState(false);
 	const [minutes, setMinutes] = useState<number>();
+	const [name, setName] = useState<string | null>('');
+	const [token, setToken] = useState<string | null>('');
 
 	useEffect(() => {
 		// get all messages for the room
 	}, []);
 
 	useEffect(() => {
+		const _name = getUsername();
+		const _token = getToken();
+		setName(_name);
+		setToken(_token);
+
 		const secondsFromMemory = getSeconds();
 		if (secondsFromMemory) {
 			const minutes = parseInt(secondsFromMemory, 10) / 60;
@@ -36,9 +47,9 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 		newSocket.on('connect', () => {
 			console.log('Connected to server');
-		}); 
+		});
 
-		newSocket.emit('join-room', { roomName: params.roomName, token: token });
+		newSocket.emit('join-room', { roomName: params.roomName, token: _token });
 
 		newSocket.on('disconnect', () => {
 			// clearStorage();
@@ -49,11 +60,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			alert(`Room is full.`);
 			router.push('/');
 		});
-
-		// newSocket.on('invalidToken', (response) => {
-		// 	alert(response);
-		// 	router.push('/');
-		// });
 
 		setSocket(newSocket);
 
@@ -72,8 +78,17 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('emitMessage', handleMessage);
 
+			// when token is expired 
 			socket.on('invalidToken', (response) => {
 				alert(response);
+				clearStorage();
+				router.push('/');
+			});
+
+
+			socket?.on('time-up', () => {
+				alert('Time is up');
+				clearStorage();
 				router.push('/');
 			});
 
@@ -119,7 +134,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			socket.emit('sendmessage', {
 				room,
 				msg: msgInput,
-				token: token
+				token: token,
 			});
 			setMsgInput('');
 		}
@@ -131,11 +146,20 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		}
 	};
 
+	const leaveRoom = (): void => {
+		clearStorage();
+	};
+
+	const kickOutUsers = (): void => {
+		socket?.emit('kickout-users', { roomName: params.roomName });
+	};
+
 	return (
 		<main>
 			<h2>{name}</h2>
-			<button onClick={() => deleteMessages()}>Delete</button>
-			{minutes && <Timer minutes={minutes} startTimer={startTimer} />}
+			<button onClick={() => leaveRoom()}>Leave</button>
+			{/* <button onClick={() => deleteMessages()}>Delete</button> */}
+			{minutes && <Timer minutes={minutes} startTimer={startTimer} kickOutUsers={kickOutUsers}/>}
 			<input
 				type='text'
 				value={msgInput}
