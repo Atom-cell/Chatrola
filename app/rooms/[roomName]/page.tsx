@@ -78,13 +78,12 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('emitMessage', handleMessage);
 
-			// when token is expired 
+			// when token is expired
 			socket.on('invalidToken', (response) => {
 				alert(response);
 				clearStorage();
 				router.push('/');
 			});
-
 
 			socket?.on('time-up', () => {
 				alert('Time is up');
@@ -121,6 +120,9 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				}),
 			});
 			const result = await deleteCall.json();
+			if (result && result.status === 200) {
+				socket?.emit('kickout-users', { roomName: params.roomName });
+			}
 			clearStorage();
 			console.log(result);
 		} catch (error) {
@@ -151,7 +153,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	};
 
 	const kickOutUsers = (): void => {
-		socket?.emit('kickout-users', { roomName: params.roomName });
+		deleteMessages();
 	};
 
 	return (
@@ -159,7 +161,13 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			<h2>{name}</h2>
 			<button onClick={() => leaveRoom()}>Leave</button>
 			{/* <button onClick={() => deleteMessages()}>Delete</button> */}
-			{minutes && <Timer minutes={minutes} startTimer={startTimer} kickOutUsers={kickOutUsers}/>}
+			{minutes && (
+				<Timer
+					minutes={minutes}
+					startTimer={startTimer}
+					kickOutUsers={kickOutUsers}
+				/>
+			)}
 			<input
 				type='text'
 				value={msgInput}
