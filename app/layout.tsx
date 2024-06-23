@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Share_Tech_Mono } from 'next/font/google';
 import './globals.css';
+import Navbar from './components/Navbar';
 
 const inter = Share_Tech_Mono({
 	weight: '400',
@@ -20,7 +21,10 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en'>
-			<body className={inter.className}>{children}</body>
+			<body className={inter.className}>
+				<Navbar />
+				{children}
+			</body>
 		</html>
 	);
 }
