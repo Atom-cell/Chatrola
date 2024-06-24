@@ -131,8 +131,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		}
 	};
 
-	//! token expire but time not over. 
-	//! set 1 minute room 
+	//! token expire but time not over.
+	//! set 1 minute room
 	const sendMessage = () => {
 		if (msgInput !== '' && socket) {
 			let room = params.roomName;
@@ -174,28 +174,35 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					kickOutUsers={kickOutUsers}
 				/>
 			)}
-			<input
-				type='text'
-				value={msgInput}
-				onKeyDown={handleKeyDown}
-				onChange={(e: ChangeEvent<HTMLInputElement>) =>
-					setMsgInput(e.target.value)
-				}
-				className='text-black'
-			/>
-			<button
-				className='bg-gray-500 p-2 m-2 hover:bg-gray-400'
-				onClick={() => sendMessage()}
-			>
-				Send
-			</button>
-			{message.map((data, index) => {
-				return (
-					<p key={index} className='text-xl text-white '>
-						{data}
-					</p>
-				);
-			})}
+			<div className='h-96 border border-slate-50 relative'>
+				<div className='h-4/5 max-h- border-4 border-green-500'>
+					{message.map((data, index) => {
+						return (
+							<p key={index} className='text-xl text-white '>
+								{data}
+							</p>
+						);
+					})}
+				</div>
+
+				<div className=' min-h-4 border-4 border-red-400'>
+					<input
+						type='text'
+						value={msgInput}
+						onKeyDown={handleKeyDown}
+						onChange={(e: ChangeEvent<HTMLInputElement>) =>
+							setMsgInput(e.target.value)
+						}
+						className='text-black'
+					/>
+					<button
+						className='bg-gray-500 p-2 m-2 hover:bg-gray-400'
+						onClick={() => sendMessage()}
+					>
+						Send
+					</button>
+				</div>
+			</div>
 		</main>
 	);
 }

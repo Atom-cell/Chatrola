@@ -9,8 +9,6 @@ import {
 	getRoomname,
 	setRoomname,
 } from '../utils/LocalStorage';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 
 const CreateRoom = () => {
 	const router = useRouter();
@@ -61,7 +59,7 @@ const CreateRoom = () => {
 	};
 	return (
 		<div className=' flex flex-col justify-center items-center md:w-11/12 md:h-11/12 w-full h-full space-y-6'>
-			<h3 className='text-slate-200 md:text-4xl text-2xl font-extrabold mb-12'>
+			<h3 className='text-slate-200 md:text-4xl text-3xl font-extrabold mb-12'>
 				Create Instant Room
 			</h3>
 			{/* <Timer minutes={1} /> */}
@@ -73,7 +71,7 @@ const CreateRoom = () => {
 					type='text'
 					placeholder='Enter your name'
 					value={username}
-					className='text-black py-1 px-2 rounded outline-none md:w-96'
+					className='text-black py-2 px-2 md:text-md rounded outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						setUserName(e.target.value)
 					}
@@ -82,7 +80,7 @@ const CreateRoom = () => {
 					type='email'
 					placeholder="Enter your partner's email"
 					value={email}
-					className='text-black block py-1 px-2 rounded outline-none md:w-96'
+					className='text-black   py-2 px-2 md:text-md rounded outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						setEmail(e.target.value)
 					}
@@ -91,13 +89,13 @@ const CreateRoom = () => {
 					type='number'
 					placeholder='Enter chat minutes'
 					value={minutes}
-					className='text-black block py-1 px-2 rounded outline-none md:w-96'
+					className='text-black   py-2 px-2 md:text-md rounded outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						setminutes(e.target.value)
 					}
 				/>
 				{buttonText !== 'Join Room' ? (
-					<button type='submit' className='m-4'>
+					<button type='submit' className='m-4 bg-green w-2/4 rounded py-2 md:text-xl'>
 						{buttonText}
 					</button>
 				) : null}
