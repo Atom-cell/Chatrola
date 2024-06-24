@@ -72,7 +72,7 @@ const CreateRoom = () => {
 					type='text'
 					placeholder='Enter your name'
 					value={username}
-					className='text-black py-2 px-2 md:text-md rounded outline-none w-80 md:w-96'
+					className='text-black py-2 px-2 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						setUserName(e.target.value)
 					}
@@ -81,7 +81,7 @@ const CreateRoom = () => {
 					type='email'
 					placeholder="Enter your partner's email"
 					value={email}
-					className='text-black   py-2 px-2 md:text-md rounded outline-none w-80 md:w-96'
+					className='text-black   py-2 px-2 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						setEmail(e.target.value)
 					}
@@ -90,7 +90,7 @@ const CreateRoom = () => {
 					type='number'
 					placeholder='Enter chat minutes'
 					value={minutes}
-					className='text-black   py-2 px-2 md:text-md rounded outline-none w-80 md:w-96'
+					className='text-black   py-2 px-2 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						setminutes(e.target.value)
 					}
