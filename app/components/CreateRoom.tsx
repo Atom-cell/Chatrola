@@ -9,6 +9,7 @@ import {
 	getRoomname,
 	setRoomname,
 } from '../utils/LocalStorage';
+import Button from './Button';
 
 const CreateRoom = () => {
 	const router = useRouter();
@@ -95,15 +96,14 @@ const CreateRoom = () => {
 					}
 				/>
 				{buttonText !== 'Join Room' ? (
-					<button type='submit' className='m-4 bg-green w-2/4 rounded py-2 md:text-xl'>
-						{buttonText}
-					</button>
+					<Button buttonText={buttonText} type='submit'/>
 				) : null}
 			</form>
 			{buttonText === 'Join Room' ? (
-				<button onClick={() => router.push(`/rooms/${roomName}`)}>
-					{buttonText}
-				</button>
+				// <button onClick={() => router.push(`/rooms/${roomName}`)}>
+				// 	{buttonText}
+				// </button>
+				<Button buttonText={buttonText} clickFn={() => router.push(`/rooms/${roomName}`)}/>
 			) : null}
 		</div>
 	);
