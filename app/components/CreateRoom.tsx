@@ -86,7 +86,7 @@ const CreateRoom = () => {
 	};
 
 	return (
-		<div>
+		<div className=' flex flex-col justify-center items-center'>
 			{/* <Timer minutes={1} /> */}
 			<form
 				onSubmit={onSubmit}
