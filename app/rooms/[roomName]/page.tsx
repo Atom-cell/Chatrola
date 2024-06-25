@@ -19,7 +19,20 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
-	const [message, setMessage] = useState<string[]>(["message 1","message 2", "message 3", "message 4"]);
+	const [message, setMessage] = useState<string[]>([
+		'message 1',
+		'message 2',
+		'message 3',
+		'message 4',
+		'message 1',
+		'message 2',
+		'message 4',
+		'message 1',
+		'message 2',
+		'message 4',
+		'message 1',
+		'message 2',
+	]);
 	const [startTimer, setStartTimer] = useState(false);
 	const [minutes, setMinutes] = useState<number>();
 	const [name, setName] = useState<string | null>('');
@@ -166,29 +179,36 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	};
 
 	return (
-		<div className='w-full h-full border border-red-500'>
+		<div className='md:w-4/5 w-full h-full'>
 			{/* <button onClick={() => deleteMessages()}>Delete</button> */}
-			<h2 className=''>Joyful Journey</h2>
-			{/* <Button buttonText="Leave" clickFn={() => leaveRoom()}/> */}
-			{minutes && (
-				<Timer
-					minutes={minutes}
-					startTimer={startTimer}
-					kickOutUsers={kickOutUsers}
-				/>
-			)}
-			<div className=''>
-				<div className=' border-1 border-green-500 flex flex-col flex-1 h-full'>
-					{message.map((data, index) => {
-						return (
-							<p key={index} className='text-xl text-white '>
-								{data}
-							</p>
-						);
-					})}
+			<div className='flex items-center justify-between'>
+				<h2 className='md:text-3xl text-base'>Joyful Journey</h2>
+				{minutes && (
+					<Timer
+						minutes={minutes}
+						startTimer={startTimer}
+						kickOutUsers={kickOutUsers}
+					/>
+				)}
+				<Timer minutes={20} startTimer={true} kickOutUsers={kickOutUsers} />
+
+				<button
+					onClick={() => leaveRoom()}
+					className='m-4 bg-green-1 w-1/6 rounded py-2 px-1 md:text-xl text-md hover:bg-green-600 hover:translate-y-0.5 hover:translate-x-0.5 transition ease-in-out delay-90 '
+				>
+					Leave
+				</button>
+			</div>
+			<div className='flex flex-col h-[90%]'>
+				<div className='flex-1 overflow-auto mt-2 border-2 border-green-500'>
+					{message.map((data, index) => (
+						<p key={index} className='text-xl text-white tracking-tighter'>
+							{data}
+						</p>
+					))}
 				</div>
 
-				<div className='flex items-center mt-auto'>
+				<div className='flex items-center mb-2'>
 					<input
 						type='text'
 						value={msgInput}

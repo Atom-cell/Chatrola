@@ -13,7 +13,7 @@ const Timer = ({ minutes, startTimer, kickOutUsers }: TimerProps) => {
 
 	useEffect(() => {
 		let intervalId: NodeJS.Timeout | null = null;
-		console.log(startTimer);
+		// console.log(startTimer);
 		if (startTimer && secondsRemaining > 0) {
 			intervalId = setInterval(() => {
 				setSecondsRemaining((prevSeconds) => {
@@ -42,7 +42,7 @@ const Timer = ({ minutes, startTimer, kickOutUsers }: TimerProps) => {
 	};
 
 	return (
-		<div className='text-white text-3xl font-semibold'>
+		<div className='text-white md:text-5xl text-xl font-bold animate-pulse'>
 			{formatTime(secondsRemaining)}
 		</div>
 	);
