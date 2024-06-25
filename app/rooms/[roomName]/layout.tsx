@@ -4,10 +4,8 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang='en'>
-			<div className='flex p-5 justify-center items-center bg-gray-500 h-screen'>
-				{children}
-			</div>
-		</html>
+		<div className=' flex flex-col items-center justify-center h-screen p-8'>
+			{children}
+		</div>
 	);
 }

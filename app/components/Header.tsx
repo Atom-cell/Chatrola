@@ -1,5 +1,5 @@
 import React from 'react';
-import ChatrolaIcon from '../Icon';
+import ChatrolaIcon from '../icons/Icon';
 
 const Header = () => {
 	return (
