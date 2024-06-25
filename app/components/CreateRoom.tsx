@@ -8,8 +8,10 @@ import {
 	setMinutes,
 	getRoomname,
 	setRoomname,
+	clearStorage,
 } from '../utils/LocalStorage';
 import Button from './Button';
+import toast, { Toaster } from 'react-hot-toast';
 
 const CreateRoom = () => {
 	const router = useRouter();
@@ -19,6 +21,7 @@ const CreateRoom = () => {
 	const [minutes, setminutes] = useState('');
 	const [buttonText, setButtonText] = useState("Let's Go");
 	const [roomName, setRoomName] = useState('');
+	const [error, setError] = useState('');
 
 	useEffect(() => {
 		const roomname = getRoomname();
@@ -29,50 +32,71 @@ const CreateRoom = () => {
 		event.preventDefault();
 		const room = RoomNames[Math.floor(Math.random() * 100)];
 		setRoomName(room);
+		setError('');
+
+		if (username.length < 3) {
+			setError('Username must be atleast 3 characters');
+			return;
+		}
+
+		const emailRegex = /^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+		if (!email.match(emailRegex)) {
+			setError('Invalid Email');
+			return false;
+		}
+		if (!minutes || parseInt(minutes, 10) < 0 || parseInt(minutes, 10) > 30) {
+			setError('Chat minutes are invalid');
+			return;
+		}
 
 		if (email && username && minutes) {
 			// local storage function
-			setRoomname(room);
-			const request = await fetch('http://localhost:5000/invite', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify({
-					username: username,
-					email: email,
-					roomName: room,
-					minutes: minutes,
-				}),
-			});
+			try {
+				setRoomname(room);
+				const request = await fetch('http://localhost:5000/invite', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						username: username,
+						email: email,
+						roomName: room,
+						minutes: minutes,
+					}),
+				});
 
-			const result = await request.json();
+				const result = await request.json();
 
-			if (result && request.status === 200) {
-				setUsername(username);
-				setToken(result.token);
-				setMinutes(result.minutes);
-				setButtonText('Join Room');
+				if (result && request.status === 200) {
+					setUsername(username);
+					setToken(result.token);
+					setMinutes(result.minutes);
+					toast.success('🎉 Room created.');
+					setButtonText('Join Room');
+				}
+			} catch (error) {
+				toast.error('Oops! Error occured');
+				console.log(error);
+				clearStorage();
 			}
 		} else {
 			console.log('Enter valid input');
 		}
 	};
+
 	return (
-		<div className=' flex flex-col justify-center items-center md:w-11/12 md:h-11/12 w-full h-full space-y-6'>
-			<h3 className='text-slate-200 md:text-4xl text-3xl font-extrabold mb-12'>
-				Create Instant Room
-			</h3>
+		<div>
 			{/* <Timer minutes={1} /> */}
 			<form
 				onSubmit={onSubmit}
-				className='space-y-6 flex flex-col justify-center items-center'
+				className=' flex flex-col justify-center items-center'
 			>
 				<input
 					type='text'
 					placeholder='Enter your name'
 					value={username}
-					className='text-black py-2 px-2 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none w-80 md:w-96'
+					className='text-black py-2 px-2 mb-6 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						setUserName(e.target.value)
 					}
@@ -81,7 +105,7 @@ const CreateRoom = () => {
 					type='email'
 					placeholder="Enter your partner's email"
 					value={email}
-					className='text-black   py-2 px-2 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-80 md:w-96'
+					className='text-black   py-2 px-2 mb-6 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						setEmail(e.target.value)
 					}
@@ -95,16 +119,23 @@ const CreateRoom = () => {
 						setminutes(e.target.value)
 					}
 				/>
+
+				<span className='w-full mt-1 text-gray-300 text-sm mb-3'>
+					Chat can be of miximum of 30 minutes
+				</span>
+
 				{buttonText !== 'Join Room' ? (
-					<Button buttonText={buttonText} type='submit'/>
+					<Button buttonText={buttonText} type='submit' />
 				) : null}
+				<p className='text-red-500 h-3'>{error}</p>
 			</form>
 			{buttonText === 'Join Room' ? (
-				// <button onClick={() => router.push(`/rooms/${roomName}`)}>
-				// 	{buttonText}
-				// </button>
-				<Button buttonText={buttonText} clickFn={() => router.push(`/rooms/${roomName}`)}/>
+				<Button
+					buttonText={buttonText}
+					clickFn={() => router.push(`/rooms/${roomName}`)}
+				/>
 			) : null}
+			<Toaster />
 		</div>
 	);
 };
