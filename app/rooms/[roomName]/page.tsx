@@ -15,17 +15,24 @@ import SendIcon from '@/app/icons/SendIcon';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function Home({ params }: { params: { roomName: string } }) {
-	type message = {
+	type messageT = {
 		msg: string;
 		sender: string;
 	};
+
+	type responseT = {
+		_id: string;
+		message: string;
+		username: string;
+		timestamp: string;
+	};
 	const router = useRouter();
 
-	const endRef = useRef(null);
+	const endRef = useRef<null | HTMLDivElement>(null);
 
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
-	const [message, setMessage] = useState<message[]>([]);
+	const [message, setMessage] = useState<messageT[]>([]);
 	const [startTimer, setStartTimer] = useState(false);
 	const [minutes, setMinutes] = useState<number>();
 	const [name, setName] = useState<string | null>('');
@@ -35,9 +42,33 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		endRef.current?.scrollIntoView({ behavior: 'smooth' });
 	}, [message]);
 
-	useEffect(() => {
-		//! get all messages for the room
-	}, []);
+	const getRoomMessages = async () => {
+		const _token = getToken();
+		try {
+			const getCall = await fetch(
+				`http://localhost:5000/chat/${params.roomName}`,
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'application/json',
+						Authorization: `Bearer ${_token}`,
+					},
+				}
+			);
+			const result = await getCall.json();
+
+			console.log(result);
+			if (result) {
+				setMessage(
+					result.map((res: responseT) => {
+						return { msg: res.message, sender: res.username };
+					})
+				);
+			}
+		} catch (error) {
+			console.log('Error in getting messages ', error);
+		}
+	};
 
 	useEffect(() => {
 		const _name = getUsername();
@@ -70,11 +101,13 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		});
 
 		newSocket.on('roomFull', () => {
-			alert(`Room is full.`);
+			toast.error('Room is full 😤');
 			router.push('/');
 		});
 
 		setSocket(newSocket);
+
+		getRoomMessages();
 
 		return () => {
 			newSocket.disconnect();
@@ -84,7 +117,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	// Receiving message
 	useEffect(() => {
 		if (socket) {
-			const handleMessage = (socketMessage: message) => {
+			const handleMessage = (socketMessage: messageT) => {
 				console.log('message array ', message, ' socket ', socketMessage);
 				setMessage((prevMessage) => [...prevMessage, socketMessage]);
 			};
@@ -93,14 +126,14 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			// when token is expired
 			socket.on('invalidToken', (response) => {
-				alert(response);
+				toast.error(response);
 				deleteMessages();
 				clearStorage();
 				router.push('/');
 			});
 
 			socket?.on('time-up', () => {
-				alert('Time is up');
+				toast.error('Time is up!');
 				clearStorage();
 				router.push('/');
 			});
@@ -121,7 +154,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				socket.off('emitMessage', handleMessage);
 			};
 		}
-	}, [socket, message]);
+	}, [socket]);
 
 	const deleteMessages = async (): Promise<void> => {
 		try {
@@ -140,7 +173,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			// 	socket?.emit('kickout-users', { roomName: params.roomName });
 			// }
 			clearStorage();
-			console.log(result);
+			console.log('DELETE----- ',result);
 		} catch (error) {
 			console.log('Error in removing messages ', error);
 		}
@@ -200,8 +233,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			{/* <div className='flex flex-col h-full'> */}
 
 			<div
-				className='overflow-y-scroll mt-2 flex flex-col'
-				style={{maxHeight:'60vh'}}
+				className='overflow-y-scroll mt-2 flex flex-col '
+				style={{ maxHeight: '60vh' }}
 			>
 				{message.map((data, index) => (
 					<p
@@ -213,7 +246,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 						{data.msg}
 					</p>
 				))}
-				{/* <div ref={endRef}></div> */}
+				<div ref={endRef}></div>
 			</div>
 
 			<div className='flex items-center mb-2 mt-auto'>

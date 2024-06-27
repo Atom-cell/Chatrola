@@ -103,7 +103,7 @@ const CreateRoom = () => {
 				/>
 				<input
 					type='email'
-					placeholder="Enter your partner's email"
+					placeholder="Enter your friend's email"
 					value={email}
 					className='text-black   py-2 px-2 mb-6 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>

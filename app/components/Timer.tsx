@@ -37,12 +37,12 @@ const Timer = ({ minutes, startTimer, kickOutUsers }: TimerProps) => {
 
 	const formatTime = (seconds: number): string => {
 		const minutes = Math.floor(seconds / 60);
-		const remainingSeconds = seconds % 60;
+		const remainingSeconds = Math.floor(seconds % 60);
 		return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
 	};
 
 	return (
-		<div className='text-white md:text-5xl text-xl font-bold animate-pulse'>
+		<div className='text-white md:text-5xl text-xl font-bold'>
 			{formatTime(secondsRemaining)}
 		</div>
 	);

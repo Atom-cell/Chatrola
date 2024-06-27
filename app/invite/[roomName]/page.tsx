@@ -9,6 +9,8 @@ import {
 	getUsername,
 } from '@/app/utils/LocalStorage';
 import Button from '@/app/components/Button';
+import toast, { Toaster } from 'react-hot-toast';
+
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -31,7 +33,8 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 				});
 				const result = await checkInviteCall.json();
 				if (result) {
-					console.log(result.validity);
+					console.log('validity of token : ',result.validity);
+					!result.validity && toast.error('Invite link expired!') 
 					setValidInvite(result.validity);
 				}
 			} catch (error) {
@@ -94,6 +97,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 				<Button buttonText='Join Room' type='submit'/>
 				<p className='text-red-500 h-3'>{error}</p>
 			</form>
+			<Toaster/>
 		</div>
 	);
 };
