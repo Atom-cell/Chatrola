@@ -17,6 +17,8 @@
 }
 
 body {
+  scrollbar-width: thin !important;
+  scrollbar-color: gray black;
   color: rgb(var(--foreground-rgb));
   background: linear-gradient(
       to bottom,

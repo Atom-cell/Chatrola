@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, ChangeEvent } from 'react';
+import { useEffect, useState, ChangeEvent, useRef, RefObject } from 'react';
 import { useRouter } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
 import Timer from '../../components/Timer';
@@ -12,117 +12,116 @@ import {
 	clearStorage,
 } from '@/app/utils/LocalStorage';
 import SendIcon from '@/app/icons/SendIcon';
-import Button from '@/app/components/Button';
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Home({ params }: { params: { roomName: string } }) {
+	type message = {
+		msg: string;
+		sender: string;
+	};
 	const router = useRouter();
+
+	const endRef = useRef(null);
 
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
-	const [message, setMessage] = useState<string[]>([
-		'message 1',
-		'message 2',
-		'message 3',
-		'message 4',
-		'message 1',
-		'message 2',
-		'message 4',
-		'message 1',
-		'message 2',
-		'message 4',
-		'message 1',
-		'message 2',
-	]);
+	const [message, setMessage] = useState<message[]>([]);
 	const [startTimer, setStartTimer] = useState(false);
 	const [minutes, setMinutes] = useState<number>();
 	const [name, setName] = useState<string | null>('');
 	const [token, setToken] = useState<string | null>('');
 
-	// useEffect(() => {
-	// 	// get all messages for the room
-	// }, []);
+	useEffect(() => {
+		endRef.current?.scrollIntoView({ behavior: 'smooth' });
+	}, [message]);
 
-	// useEffect(() => {
-	// 	const _name = getUsername();
-	// 	const _token = getToken();
-	// 	setName(_name);
-	// 	setToken(_token);
+	useEffect(() => {
+		//! get all messages for the room
+	}, []);
 
-	// 	const secondsFromMemory = getSeconds();
-	// 	if (secondsFromMemory) {
-	// 		const minutes = parseInt(secondsFromMemory, 10) / 60;
-	// 		setMinutes(minutes);
-	// 	} else {
-	// 		const minutesString = getMinutes();
-	// 		const mins: number =
-	// 			minutesString !== null ? parseInt(minutesString, 10) : 0;
-	// 		setMinutes(mins);
-	// 	}
+	useEffect(() => {
+		const _name = getUsername();
+		const _token = getToken();
+		setName(_name);
+		setToken(_token);
 
-	// 	const newSocket = io('http://localhost:5000');
+		const secondsFromMemory = getSeconds();
+		if (secondsFromMemory) {
+			const minutes = parseInt(secondsFromMemory, 10) / 60;
+			setMinutes(minutes);
+		} else {
+			const minutesString = getMinutes();
+			const mins: number =
+				minutesString !== null ? parseInt(minutesString, 10) : 0;
+			setMinutes(mins);
+		}
 
-	// 	newSocket.on('connect', () => {
-	// 		console.log('Connected to server');
-	// 	});
+		const newSocket = io('http://localhost:5000');
 
-	// 	newSocket.emit('join-room', { roomName: params.roomName, token: _token });
+		newSocket.on('connect', () => {
+			console.log('Connected to server');
+		});
 
-	// 	newSocket.on('disconnect', () => {
-	// 		// clearStorage();
-	// 		console.log('Disconnected from server ');
-	// 	});
+		newSocket.emit('join-room', { roomName: params.roomName, token: _token });
 
-	// 	newSocket.on('roomFull', () => {
-	// 		alert(`Room is full.`);
-	// 		router.push('/');
-	// 	});
+		newSocket.on('disconnect', () => {
+			// clearStorage();
+			console.log('Disconnected from server ');
+		});
 
-	// 	setSocket(newSocket);
+		newSocket.on('roomFull', () => {
+			alert(`Room is full.`);
+			router.push('/');
+		});
 
-	// 	return () => {
-	// 		newSocket.disconnect();
-	// 	};
-	// }, []);
+		setSocket(newSocket);
 
-	// // Receiving message
-	// useEffect(() => {
-	// 	if (socket) {
-	// 		const handleMessage = (socketMessage: string) => {
-	// 			console.log('message array ', message, ' socket ', socketMessage);
-	// 			setMessage((prevMessage) => [...prevMessage, socketMessage]);
-	// 		};
+		return () => {
+			newSocket.disconnect();
+		};
+	}, []);
 
-	// 		socket.on('emitMessage', handleMessage);
+	// Receiving message
+	useEffect(() => {
+		if (socket) {
+			const handleMessage = (socketMessage: message) => {
+				console.log('message array ', message, ' socket ', socketMessage);
+				setMessage((prevMessage) => [...prevMessage, socketMessage]);
+			};
 
-	// 		// when token is expired
-	// 		socket.on('invalidToken', (response) => {
-	// 			alert(response);
-	// 			deleteMessages();
-	// 			clearStorage();
-	// 			router.push('/');
-	// 		});
+			socket.on('emitMessage', handleMessage);
 
-	// 		socket?.on('time-up', () => {
-	// 			alert('Time is up');
-	// 			clearStorage();
-	// 			router.push('/');
-	// 		});
+			// when token is expired
+			socket.on('invalidToken', (response) => {
+				alert(response);
+				deleteMessages();
+				clearStorage();
+				router.push('/');
+			});
 
-	// 		socket.on('start-timer', () => {
-	// 			console.log('Start timer');
-	// 			setStartTimer(true);
-	// 		});
+			socket?.on('time-up', () => {
+				alert('Time is up');
+				clearStorage();
+				router.push('/');
+			});
 
-	// 		socket.on('stop-timer', () => {
-	// 			console.log('Stop Timer');
-	// 			setStartTimer(false);
-	// 		});
+			socket.on('start-timer', () => {
+				console.log('Start timer');
+				toast.success('🎉 Your friend joined the room.');
+				setStartTimer(true);
+			});
 
-	// 		return () => {
-	// 			socket.off('emitMessage', handleMessage);
-	// 		};
-	// 	}
-	// }, [socket, message]);
+			socket.on('stop-timer', () => {
+				console.log('Stop Timer');
+				toast.error('Your friend left the room 🙁');
+				setStartTimer(false);
+			});
+
+			return () => {
+				socket.off('emitMessage', handleMessage);
+			};
+		}
+	}, [socket, message]);
 
 	const deleteMessages = async (): Promise<void> => {
 		try {
@@ -156,6 +155,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				room,
 				msg: msgInput,
 				token: token,
+				sender: name,
 			});
 			setMsgInput('');
 		}
@@ -179,8 +179,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	};
 
 	return (
-		<div className='md:w-4/5 w-full h-full'>
-			{/* <button onClick={() => deleteMessages()}>Delete</button> */}
+		<div className='w-full h-full flex flex-col shadow-md '>
 			<div className='flex items-center justify-between'>
 				<h2 className='md:text-3xl text-base'>Joyful Journey</h2>
 				{minutes && (
@@ -190,7 +189,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 						kickOutUsers={kickOutUsers}
 					/>
 				)}
-				<Timer minutes={20} startTimer={true} kickOutUsers={kickOutUsers} />
 
 				<button
 					onClick={() => leaveRoom()}
@@ -199,33 +197,45 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					Leave
 				</button>
 			</div>
-			<div className='flex flex-col h-[90%]'>
-				<div className='flex-1 overflow-auto mt-2 border-2 border-green-500'>
-					{message.map((data, index) => (
-						<p key={index} className='text-xl text-white tracking-tighter'>
-							{data}
-						</p>
-					))}
-				</div>
+			{/* <div className='flex flex-col h-full'> */}
 
-				<div className='flex items-center mb-2'>
-					<input
-						type='text'
-						value={msgInput}
-						onKeyDown={handleKeyDown}
-						onChange={(e: ChangeEvent<HTMLInputElement>) =>
-							setMsgInput(e.target.value)
-						}
-						className='text-black rounded py-1 px-2 text-lg focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-full tracking-tighter'
-					/>
-					<button
-						className='flex items-center justify-center py-2 px-4 rounded bg-green-1 m-2 hover:bg-green-600'
-						onClick={() => sendMessage()}
+			<div
+				className='overflow-y-scroll mt-2 flex flex-col'
+				style={{maxHeight:'60vh'}}
+			>
+				{message.map((data, index) => (
+					<p
+						key={index}
+						className={` text-sm md:text-lg text-white tracking-tighter w-[90%] h-auto px-4 py-2 rounded ${
+							data.sender === name ? 'bg-gray-800 self-end' : 'bg-gray-800'
+						} my-2`}
 					>
-						<SendIcon />
-					</button>
-				</div>
+						{data.msg}
+					</p>
+				))}
+				{/* <div ref={endRef}></div> */}
 			</div>
+
+			<div className='flex items-center mb-2 mt-auto'>
+				<input
+					type='text'
+					placeholder='Type a message ...'
+					value={msgInput}
+					onKeyDown={handleKeyDown}
+					onChange={(e: ChangeEvent<HTMLInputElement>) =>
+						setMsgInput(e.target.value)
+					}
+					className='text-black rounded py-1 px-2 text-lg focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-full tracking-tighter'
+				/>
+				<button
+					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 m-2 hover:bg-green-600'
+					onClick={() => sendMessage()}
+				>
+					<SendIcon />
+				</button>
+			</div>
+			<Toaster />
 		</div>
+		// </div>
 	);
 }
