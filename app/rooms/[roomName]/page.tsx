@@ -27,6 +27,12 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		username: string;
 		timestamp: string;
 	};
+
+	interface CustomError extends Error {
+		description?: string;
+		context?: any;
+	}
+
 	const router = useRouter();
 
 	const endRef = useRef<null | HTMLDivElement>(null);
@@ -91,7 +97,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			console.log('Connected to server');
 		});
 
-		newSocket.on('connect_error', (err) => {
+		newSocket.on('connect_error', (err:CustomError) => {
 			// the reason of the error, for example "xhr poll error"
 			console.log(err.message);
 

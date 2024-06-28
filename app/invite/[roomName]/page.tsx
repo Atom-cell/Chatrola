@@ -13,6 +13,11 @@ import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
 
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
+	interface CustomError extends Error {
+		description?: string;
+		context?: any;
+	  }
+
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [username, setusername] = useState('');
@@ -68,7 +73,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 				console.log('Connected to server');
 			});
 
-			newSocket.on("connect_error", (err) => {
+			newSocket.on("connect_error", (err:CustomError) => {
 				// the reason of the error, for example "xhr poll error"
 				console.log(err.message);
 			  
