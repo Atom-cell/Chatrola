@@ -46,16 +46,13 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const getRoomMessages = async () => {
 		const _token = getToken();
 		try {
-			const getCall = await fetch(
-				`${serverURL}/chat/${params.roomName}`,
-				{
-					method: 'GET',
-					headers: {
-						'Content-Type': 'application/json',
-						Authorization: `Bearer ${_token}`,
-					},
-				}
-			);
+			const getCall = await fetch(`${serverURL}/chat/${params.roomName}`, {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					Authorization: `Bearer ${_token}`,
+				},
+			});
 			const result = await getCall.json();
 
 			console.log(result);
@@ -92,6 +89,17 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 		newSocket.on('connect', () => {
 			console.log('Connected to server');
+		});
+
+		newSocket.on('connect_error', (err) => {
+			// the reason of the error, for example "xhr poll error"
+			console.log(err.message);
+
+			// some additional description, for example the status code of the initial HTTP response
+			console.log(err.description);
+
+			// some additional context, for example the XMLHttpRequest object
+			console.log(err.context);
 		});
 
 		newSocket.emit('join-room', { roomName: params.roomName, token: _token });
