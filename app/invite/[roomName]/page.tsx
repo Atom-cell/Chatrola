@@ -68,6 +68,17 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 				console.log('Connected to server');
 			});
 
+			newSocket.on("connect_error", (err) => {
+				// the reason of the error, for example "xhr poll error"
+				console.log(err.message);
+			  
+				// some additional description, for example the status code of the initial HTTP response
+				console.log(err.description);
+			  
+				// some additional context, for example the XMLHttpRequest object
+				console.log(err.context);
+			  });
+
 			const minutes = searchParams.get('minutes') as string;
 			newSocket.emit('generate-token', {
 				username: username,
