@@ -18,6 +18,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const [username, setusername] = useState('');
 	const [validInvite, setValidInvite] = useState<boolean | null>(null);
 	const [error, setError] = useState('');
+	const [expired, setExpired] = useState(false)
 
 	useEffect(() => {
 		console.log('CHecking ---- ');
@@ -35,7 +36,11 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 				const result = await checkInviteCall.json();
 				if (result) {
 					console.log('validity of token : ',result.validity);
-					!result.validity && toast.error('Invite link expired!') 
+					if (!result.validity) {
+						toast.error('Invite link expired!') 
+						setExpired(true);
+						setError('Invite expired');
+					}
 					setValidInvite(result.validity);
 				}
 			} catch (error) {
@@ -55,7 +60,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 			return;
 		}
 		if (validInvite) {
-			const newSocket = io('http://localhost:5000');
+			const newSocket = io(serverURL);
 
 			newSocket.on('connect', () => {
 				console.log('Connected to server');

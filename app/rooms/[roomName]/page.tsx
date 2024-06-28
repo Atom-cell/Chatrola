@@ -88,7 +88,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			setMinutes(mins);
 		}
 
-		const newSocket = io('http://localhost:5000');
+		const newSocket = io(serverURL);
 
 		newSocket.on('connect', () => {
 			console.log('Connected to server');
