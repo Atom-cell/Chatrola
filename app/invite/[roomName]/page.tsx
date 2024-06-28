@@ -18,7 +18,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const [username, setusername] = useState('');
 	const [validInvite, setValidInvite] = useState<boolean | null>(null);
 	const [error, setError] = useState('');
-	const [expired, setExpired] = useState(false)
+	const [expired, setExpired] = useState(false);
 
 	useEffect(() => {
 		console.log('CHecking ---- ');
@@ -35,9 +35,9 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 				});
 				const result = await checkInviteCall.json();
 				if (result) {
-					console.log('validity of token : ',result.validity);
+					console.log('validity of token : ', result.validity);
 					if (!result.validity) {
-						toast.error('Invite link expired!') 
+						toast.error('Invite link expired!');
 						setExpired(true);
 						setError('Invite expired');
 					}
@@ -60,7 +60,9 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 			return;
 		}
 		if (validInvite) {
-			const newSocket = io(serverURL);
+			const newSocket = io(serverURL, {
+				withCredentials: true,
+			});
 
 			newSocket.on('connect', () => {
 				console.log('Connected to server');
@@ -90,7 +92,10 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 			<h3 className='text-slate-200 md:text-4xl text-3xl font-extrabold mb-12'>
 				Meeting Invite
 			</h3>
-			<form onSubmit={onSubmit} className=' flex flex-col justify-center items-center'>
+			<form
+				onSubmit={onSubmit}
+				className=' flex flex-col justify-center items-center'
+			>
 				<input
 					type='text'
 					placeholder='Enter your name'
@@ -100,10 +105,10 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 						setusername(e.target.value)
 					}
 				/>
-				<Button buttonText='Join Room' type='submit'/>
+				<Button buttonText='Join Room' type='submit' />
 				<p className='text-red-500 h-3'>{error}</p>
 			</form>
-			<Toaster/>
+			<Toaster />
 		</div>
 	);
 };
