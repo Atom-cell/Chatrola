@@ -45,8 +45,8 @@ const CreateRoom = () => {
 			setError('Invalid Email');
 			return false;
 		}
-		if (!minutes || parseInt(minutes, 10) < 0 || parseInt(minutes, 10) > 30) {
-			setError('Chat minutes are invalid');
+		if (!minutes || parseInt(minutes, 10) < 5 || parseInt(minutes, 10) > 30) {
+			setError('Minutes can be between 5 and 30 only');
 			return;
 		}
 
