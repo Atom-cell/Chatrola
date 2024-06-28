@@ -10,6 +10,7 @@ import {
 } from '@/app/utils/LocalStorage';
 import Button from '@/app/components/Button';
 import toast, { Toaster } from 'react-hot-toast';
+import serverURL from '@/app/utils/ServerURI';
 
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const router = useRouter();
@@ -24,7 +25,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 		const checkInviteExpiration = async () => {
 			const inviteToken = searchParams.get('token') as string;
 			try {
-				const checkInviteCall = await fetch('http://localhost:5000/invite', {
+				const checkInviteCall = await fetch(`${serverURL}/invite`, {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json',

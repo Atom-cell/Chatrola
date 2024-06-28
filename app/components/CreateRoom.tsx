@@ -12,6 +12,7 @@ import {
 } from '../utils/LocalStorage';
 import Button from './Button';
 import toast, { Toaster } from 'react-hot-toast';
+import serverURL from '../utils/ServerURI';
 
 const CreateRoom = () => {
 	const router = useRouter();
@@ -55,7 +56,7 @@ const CreateRoom = () => {
 			try {
 				setLoading(true)
 				setRoomname(room);
-				const request = await fetch('http://localhost:5000/invite', {
+				const request = await fetch(`${serverURL}/invite`, {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json',

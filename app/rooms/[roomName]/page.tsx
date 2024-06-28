@@ -13,6 +13,7 @@ import {
 } from '@/app/utils/LocalStorage';
 import SendIcon from '@/app/icons/SendIcon';
 import toast, { Toaster } from 'react-hot-toast';
+import serverURL from '@/app/utils/ServerURI';
 
 export default function Home({ params }: { params: { roomName: string } }) {
 	type messageT = {
@@ -46,7 +47,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		const _token = getToken();
 		try {
 			const getCall = await fetch(
-				`http://localhost:5000/chat/${params.roomName}`,
+				`${serverURL}/chat/${params.roomName}`,
 				{
 					method: 'GET',
 					headers: {
@@ -158,7 +159,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 	const deleteMessages = async (): Promise<void> => {
 		try {
-			const deleteCall = await fetch('http://localhost:5000/chat', {
+			const deleteCall = await fetch(`${serverURL}/chat`, {
 				method: 'DELETE',
 				headers: {
 					'Content-Type': 'application/json',
