@@ -173,7 +173,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			// 	socket?.emit('kickout-users', { roomName: params.roomName });
 			// }
 			clearStorage();
-			console.log('DELETE----- ',result);
+			console.log('DELETE----- ', result);
 		} catch (error) {
 			console.log('Error in removing messages ', error);
 		}

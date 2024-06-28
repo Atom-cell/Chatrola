@@ -21,7 +21,7 @@ const Timer = ({ minutes, startTimer, kickOutUsers }: TimerProps) => {
 					setSeconds(newSeconds.toString());
 					return newSeconds;
 				});
-			}, 1000);
+			}, 1200);
 		} else if (secondsRemaining === 0) {
 			clearInterval(intervalId!);
 			console.log('Time is up!');

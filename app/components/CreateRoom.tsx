@@ -22,6 +22,7 @@ const CreateRoom = () => {
 	const [buttonText, setButtonText] = useState("Let's Go");
 	const [roomName, setRoomName] = useState('');
 	const [error, setError] = useState('');
+	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		const roomname = getRoomname();
@@ -52,6 +53,7 @@ const CreateRoom = () => {
 		if (email && username && minutes) {
 			// local storage function
 			try {
+				setLoading(true)
 				setRoomname(room);
 				const request = await fetch('http://localhost:5000/invite', {
 					method: 'POST',
@@ -74,8 +76,10 @@ const CreateRoom = () => {
 					setMinutes(result.minutes);
 					toast.success('🎉 Room created.');
 					setButtonText('Join Room');
+					setLoading(false)
 				}
 			} catch (error) {
+				setLoading(false);
 				toast.error('Oops! Error occured');
 				console.log(error);
 				clearStorage();
@@ -125,7 +129,7 @@ const CreateRoom = () => {
 				</span>
 
 				{buttonText !== 'Join Room' ? (
-					<Button buttonText={buttonText} type='submit' />
+					<Button buttonText={buttonText} type='submit' loading={loading}/>
 				) : null}
 				<p className='text-red-500 h-3'>{error}</p>
 			</form>
