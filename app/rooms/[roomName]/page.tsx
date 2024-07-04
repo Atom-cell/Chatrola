@@ -14,6 +14,7 @@ import {
 import SendIcon from '@/app/icons/SendIcon';
 import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
+import MessagesSkeleton from '@/app/components/MessagesSkeleton';
 
 export default function Home({ params }: { params: { roomName: string } }) {
 	type messageT = {
@@ -243,10 +244,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			{/* <div className='flex flex-col h-full'> */}
 
 			<div
-				className='overflow-y-scroll mt-2 flex flex-col border border-red-500'
+				className='overflow-y-scroll mt-2 flex flex-col'
 				style={{ maxHeight: '60vh' }}
 			>
-				{message.map((data, index) => (
+				{message ? message.map((data, index) => (
 					<p
 						key={index}
 						className={` text-sm md:text-lg text-white tracking-tighter w-[90%] h-auto px-4 py-2 rounded ${
@@ -255,11 +256,11 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					>
 						{data.msg}
 					</p>
-				))}
+				)) : <MessagesSkeleton/>}
 				<div ref={endRef}></div>
 			</div>
 
-			<div className='flex items-center mb-2 mt-auto border border-red-400'>
+			<div className='flex items-center mb-2 mt-auto '>
 				<input
 					type='text'
 					placeholder='Type a message ...'
