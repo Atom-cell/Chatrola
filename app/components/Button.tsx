@@ -12,7 +12,7 @@ const Button = ({ buttonText, type, clickFn, loading }: ButtonType) => {
 		<button
 			type={type && type}
 			onClick={() => clickFn && clickFn()}
-			className='m-4 bg-green-1 w-2/4 rounded py-2 md:text-xl hover:bg-green-600 hover:translate-y-0.5 hover:translate-x-0.5 transition ease-in-out delay-90 flex items-center justify-center'
+			className='m-4 bg-green-1 w-2/4 rounded py-2 md:text-xl hover:bg-green-600 flex items-center justify-center'
 		>
 			{loading ? <Spinner /> : buttonText}
 		</button>

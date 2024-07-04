@@ -111,7 +111,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 					type='text'
 					placeholder='Enter your name'
 					value={username}
-					className='text-black py-2 px-2 mb-6 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none w-80 md:w-96'
+					className='placeholder:italic text-black py-2 px-2 mb-6 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none w-80 md:w-96'
 					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 						setusername(e.target.value)
 					}

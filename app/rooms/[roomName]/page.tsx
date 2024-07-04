@@ -235,7 +235,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 				<button
 					onClick={() => leaveRoom()}
-					className='m-4 bg-green-1 w-1/6 rounded py-2 px-1 md:text-xl text-md hover:bg-green-600 hover:translate-y-0.5 hover:translate-x-0.5 transition ease-in-out delay-90 '
+					className='m-4 bg-green-1 w-1/6 rounded py-2 px-1 md:text-xl text-md hover:bg-green-600'
 				>
 					Leave
 				</button>
@@ -243,7 +243,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			{/* <div className='flex flex-col h-full'> */}
 
 			<div
-				className='overflow-y-scroll mt-2 flex flex-col '
+				className='overflow-y-scroll mt-2 flex flex-col border border-red-500'
 				style={{ maxHeight: '60vh' }}
 			>
 				{message.map((data, index) => (
@@ -259,7 +259,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				<div ref={endRef}></div>
 			</div>
 
-			<div className='flex items-center mb-2 mt-auto'>
+			<div className='flex items-center mb-2 mt-auto border border-red-400'>
 				<input
 					type='text'
 					placeholder='Type a message ...'
@@ -268,7 +268,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					onChange={(e: ChangeEvent<HTMLInputElement>) =>
 						setMsgInput(e.target.value)
 					}
-					className='text-black rounded py-1 px-2 text-lg focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-full tracking-tighter'
+					className='placeholder:italic text-black rounded py-1 px-2 text-lg focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-full tracking-tighter'
 				/>
 				<button
 					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 m-2 hover:bg-green-600'

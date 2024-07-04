@@ -11,8 +11,8 @@ const inter = Share_Tech_Mono({
 });
 
 export const metadata: Metadata = {
-	title: 'Chatrola - A quick one',
-	description: 'An instant limited chat app',
+	title: 'Chatrola - A quick chat',
+	description: 'An instant limited time chat app',
 };
 
 export default function RootLayout({
