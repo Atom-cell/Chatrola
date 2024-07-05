@@ -11,6 +11,7 @@ import {
 import Button from '@/app/components/Button';
 import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
+import Spinner from '@/app/components/Spinner';
 
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	interface CustomError extends Error {
@@ -24,6 +25,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const [validInvite, setValidInvite] = useState<boolean | null>(null);
 	const [error, setError] = useState('');
 	const [expired, setExpired] = useState(false);
+	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
 		console.log('CHecking ---- ');
@@ -31,6 +33,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 		const checkInviteExpiration = async () => {
 			const inviteToken = searchParams.get('token') as string;
 			try {
+				setLoading(true)
 				const checkInviteCall = await fetch(`${serverURL}/invite`, {
 					method: 'GET',
 					headers: {
@@ -47,8 +50,10 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 						setError('Invite expired');
 					}
 					setValidInvite(result.validity);
+					setLoading(false);
 				}
 			} catch (error) {
+				setLoading(false);
 				console.log('Error in checking invite expiration ', error);
 			}
 		};
@@ -99,7 +104,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	};
 
 	return (
-		<div className=' flex flex-col justify-center items-center md:w-11/12 md:h-11/12 w-full h-full space-y-6'>
+		<div className=' flex flex-col justify-center items-center md:w-11/12 md:h-11/12 w-screen h-screen space-y-6'>
 			<h3 className='text-slate-200 md:text-4xl text-3xl font-extrabold mb-12'>
 				Meeting Invite
 			</h3>
@@ -116,7 +121,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 						setusername(e.target.value)
 					}
 				/>
-				<Button buttonText='Join Room' type='submit' />
+				<Button buttonText='Join Room' type='submit' loading={loading}/>
 				<p className='text-red-500 h-3'>{error}</p>
 			</form>
 			<Toaster />

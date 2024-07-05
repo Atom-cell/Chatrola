@@ -129,7 +129,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	useEffect(() => {
 		if (socket) {
 			const handleMessage = (socketMessage: messageT) => {
-				console.log('message array ', message, ' socket ', socketMessage);
+				console.log('message array ', message, ' from socket messages ', socketMessage);
 				setMessage((prevMessage) => [...prevMessage, socketMessage]);
 			};
 
