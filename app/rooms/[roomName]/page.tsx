@@ -267,7 +267,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 							<MessagesSkeleton />
 						)}
 					</div>
-					<div ref={endRef}></div>
+					{/* <div ref={endRef}></div> */}
 				</div>
 
 				<div className='flex items-center mb-2 mt-auto '>
