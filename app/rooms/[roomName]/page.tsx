@@ -256,7 +256,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 							message.map((data, index) => (
 								<p
 									key={index}
-									className={`text-sm md:text-lg text-white tracking-tighter w-[90%] h-auto px-4 py-2 rounded ${
+									className={`text-md md:text-lg text-white tracking-tighter w-[90%] h-auto px-4 py-2 rounded ${
 										data.sender === name ? 'bg-green-1 self-end' : 'bg-gray-800'
 									} my-2`}
 								>
