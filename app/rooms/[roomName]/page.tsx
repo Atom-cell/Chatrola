@@ -9,6 +9,7 @@ import {
 	getSeconds,
 	getMinutes,
 	getToken,
+	getRoomname,
 	clearStorage,
 } from '@/app/utils/LocalStorage';
 import SendIcon from '@/app/icons/SendIcon';
@@ -45,6 +46,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const [minutes, setMinutes] = useState<number>();
 	const [name, setName] = useState<string | null>('');
 	const [token, setToken] = useState<string | null>('');
+	const [roomName, setRoomName] = useState<string | null>('')
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -78,8 +80,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	useEffect(() => {
 		const _name = getUsername();
 		const _token = getToken();
+		const _roomName = getRoomname();
 		setName(_name);
 		setToken(_token);
+		setRoomName(_roomName);
 
 		const secondsFromMemory = getSeconds();
 		if (secondsFromMemory) {
@@ -231,14 +235,14 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	return (
 		<div className='w-full h-full flex flex-col shadow-md '>
 			<div className='flex items-center justify-between'>
-				<h2 className='md:text-3xl text-base'>Joyful Journey</h2>
 				{minutes && (
 					<Timer
-						minutes={minutes}
-						startTimer={startTimer}
-						kickOutUsers={kickOutUsers}
+					minutes={minutes}
+					startTimer={startTimer}
+					kickOutUsers={kickOutUsers}
 					/>
 				)}
+				<h2 className='md:text-3xl text-base'>{roomName}</h2>
 
 				<button
 					onClick={() => leaveRoom()}
