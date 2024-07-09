@@ -9,6 +9,7 @@ import {
 	getSeconds,
 	getMinutes,
 	getToken,
+	getRoomname,
 	clearStorage,
 } from '@/app/utils/LocalStorage';
 import SendIcon from '@/app/icons/SendIcon';
@@ -45,6 +46,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const [minutes, setMinutes] = useState<number>();
 	const [name, setName] = useState<string | null>('');
 	const [token, setToken] = useState<string | null>('');
+	const [roomName, setRoomName] = useState<string | null>('')
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -78,8 +80,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	useEffect(() => {
 		const _name = getUsername();
 		const _token = getToken();
+		const _roomName = getRoomname();
 		setName(_name);
 		setToken(_token);
+		setRoomName(_roomName);
 
 		const secondsFromMemory = getSeconds();
 		if (secondsFromMemory) {
@@ -135,7 +139,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				// 	' from socket messages ',
 				// 	socketMessage
 				// );
-				setMessage((prevMessage) => [...prevMessage, socketMessage]);
+				socketMessage.sender !== name && setMessage((prevMessage) => [...prevMessage, socketMessage]);
 			};
 
 			socket.on('emitMessage', handleMessage);
@@ -206,6 +210,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				token: token,
 				sender: name,
 			});
+			setMessage((prevMessage) => [...prevMessage, {msg:msgInput, sender:name as string}]);
 			setMsgInput('');
 		}
 	};
@@ -228,16 +233,17 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	};
 
 	return (
-		<div className='w-full h-full flex flex-col shadow-md'>
+		<div className='w-full h-full flex flex-col shadow-md '>
 			<div className='flex items-center justify-between'>
-				<h2 className='md:text-3xl text-base'>Joyful Journey</h2>
 				{minutes && (
 					<Timer
-						minutes={minutes}
-						startTimer={startTimer}
-						kickOutUsers={kickOutUsers}
+					minutes={minutes}
+					startTimer={startTimer}
+					kickOutUsers={kickOutUsers}
 					/>
 				)}
+				<h2 className='md:text-3xl text-base'>{roomName}</h2>
+
 				<button
 					onClick={() => leaveRoom()}
 					className='m-4 bg-green-1 w-1/6 rounded py-2 px-1 md:text-xl text-md hover:bg-green-600'
@@ -245,49 +251,48 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					Leave
 				</button>
 			</div>
+			{/* <div className='flex flex-col h-full'> */}
 
-			<div className='flex flex-col h-full'>
-				<div
-					className='flex-grow overflow-y-scroll mt-2 flex flex-col justify-end'
-					style={{ maxHeight: 'calc(100vh - 200px)' }}
+			<div
+				className='flex flex-col justify-end mt-2 flex-grow'
+				style={{ maxHeight: '64vh' }}
+			>
+				<div className='overflow-y-scroll flex flex-col'>
+					{message ? (
+						message.map((data, index) => (
+							<p
+								key={index}
+								className={`text-md md:text-lg text-white tracking-tighter w-[90%] h-auto px-4 py-2 rounded ${
+									data.sender === name ? 'bg-green-1 self-end' : 'bg-gray-800'
+								} my-2`}
+							>
+								{data.msg}
+							</p>
+						))
+					) : (
+						<MessagesSkeleton />
+					)}
+					<div ref={endRef}></div>
+				</div>
+			</div>
+
+			<div className='flex items-center mb-1 mt-auto'>
+				<input
+					type='text'
+					placeholder='Type a message ...'
+					value={msgInput}
+					onKeyDown={handleKeyDown}
+					onChange={(e: ChangeEvent<HTMLInputElement>) =>
+						setMsgInput(e.target.value)
+					}
+					className='placeholder:italic text-black rounded py-1 px-2 text-lg focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-full tracking-tighter'
+				/>
+				<button
+					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 m-2 hover:bg-green-600'
+					onClick={() => sendMessage()}
 				>
-					<div className='flex flex-col'>
-						{message ? (
-							message.map((data, index) => (
-								<p
-									key={index}
-									className={`text-md md:text-lg text-white tracking-tighter w-[90%] h-auto px-4 py-2 rounded ${
-										data.sender === name ? 'bg-green-1 self-end' : 'bg-gray-800'
-									} my-2`}
-								>
-									{data.msg}
-								</p>
-							))
-						) : (
-							<MessagesSkeleton />
-						)}
-					</div>
-					{/* <div ref={endRef}></div> */}
-				</div>
-
-				<div className='flex items-center mb-2 mt-auto '>
-					<input
-						type='text'
-						placeholder='Type a message ...'
-						value={msgInput}
-						onKeyDown={handleKeyDown}
-						onChange={(e: ChangeEvent<HTMLInputElement>) =>
-							setMsgInput(e.target.value)
-						}
-						className='placeholder:italic text-black rounded py-1 px-2 text-lg focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-full tracking-tighter'
-					/>
-					<button
-						className='flex items-center justify-center py-2 px-4 rounded bg-green-1 m-2 hover:bg-green-600'
-						onClick={() => sendMessage()}
-					>
-						<SendIcon />
-					</button>
-				</div>
+					<SendIcon />
+				</button>
 			</div>
 			<Toaster />
 		</div>
