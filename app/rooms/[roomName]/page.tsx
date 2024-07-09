@@ -250,7 +250,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			<div
 				className='flex flex-col justify-end mt-2 flex-grow'
-				style={{ maxHeight: '60vh' }} // Adjust the 60px based on your header height
+				style={{ maxHeight: '70vh' }}
 			>
 				<div className='overflow-y-scroll flex flex-col'>
 					{message ? (
