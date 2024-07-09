@@ -69,7 +69,8 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 			setError('Username must be atleast 3 characters');
 			return;
 		}
-		if (validInvite) {
+		if (validInvite && !loading) {
+			setLoading(true);
 			const newSocket = io(serverURL, {
 				withCredentials: true,
 			});
@@ -92,6 +93,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 			setMinutes(minutes);
 
 			newSocket.on('token-generated', (token) => {
+				setLoading(false)
 				setToken(token);
 				setUsername(username);
 				router.push(`/rooms/${params.roomName}`);

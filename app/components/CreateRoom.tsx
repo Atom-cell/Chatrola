@@ -51,7 +51,7 @@ const CreateRoom = () => {
 			return;
 		}
 
-		if (email && username && minutes) {
+		if (email && username && minutes && !loading) {
 			// local storage function
 			try {
 				setLoading(true)
@@ -92,7 +92,6 @@ const CreateRoom = () => {
 
 	return (
 		<div className=' flex flex-col justify-center items-center'>
-			{/* <Timer minutes={1} /> */}
 			<form
 				onSubmit={onSubmit}
 				className=' flex flex-col justify-center items-center'
