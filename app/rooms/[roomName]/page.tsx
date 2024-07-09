@@ -135,7 +135,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				// 	' from socket messages ',
 				// 	socketMessage
 				// );
-				setMessage((prevMessage) => [...prevMessage, socketMessage]);
+				socketMessage.sender !== name && setMessage((prevMessage) => [...prevMessage, socketMessage]);
 			};
 
 			socket.on('emitMessage', handleMessage);
@@ -206,6 +206,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				token: token,
 				sender: name,
 			});
+			setMessage((prevMessage) => [...prevMessage, {msg:msgInput, sender:name as string}]);
 			setMsgInput('');
 		}
 	};
@@ -250,7 +251,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			<div
 				className='flex flex-col justify-end mt-2 flex-grow'
-				style={{ maxHeight: '70vh' }}
+				style={{ maxHeight: '64vh' }}
 			>
 				<div className='overflow-y-scroll flex flex-col'>
 					{message ? (
@@ -271,7 +272,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				</div>
 			</div>
 
-			<div className='flex items-center mb-2 mt-auto'>
+			<div className='flex items-center mb-1 mt-auto'>
 				<input
 					type='text'
 					placeholder='Type a message ...'
