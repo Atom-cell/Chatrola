@@ -16,11 +16,10 @@ import { Send, Paperclip, CircleX } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
 import MessagesSkeleton from '@/app/components/MessagesSkeleton';
-import {messageT, responseT, fileT, CustomError} from '../../utils/Types'
+import { messageT, responseT, fileT, CustomError } from '../../utils/Types';
+import Image from 'next/image';
 
 export default function Home({ params }: { params: { roomName: string } }) {
-	
-
 	const router = useRouter();
 
 	const endRef = useRef<null | HTMLDivElement>(null);
@@ -341,18 +340,27 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				className='flex flex-col justify-end mt-2 flex-grow'
 				style={{ maxHeight: '64vh' }}
 			>
-				<div className='overflow-y-scroll flex flex-col'>
+				<div className='overflow-y-scroll flex flex-col h-96'>
 					{message ? (
-						message.map((data, index) => (
-							<p
-								key={index}
-								className={`text-md md:text-lg text-white tracking-tighter w-[90%] h-auto px-4 py-2 rounded ${
-									data.sender === name ? 'bg-green-1 self-end' : 'bg-gray-800'
-								} my-2`}
-							>
-								{data.msg}
-							</p>
-						))
+						message.map((data, index) =>
+							data.type === 'text' ? (
+								<p
+									key={index}
+									className={`text-md md:text-lg text-white tracking-tighter w-[90%] h-auto px-4 py-2 rounded ${
+										data.sender === name ? 'bg-green-1 self-end' : 'bg-gray-800'
+									} my-2`}
+								>
+									{data.msg}
+								</p>
+							) : data.type === 'img' ? (
+								<Image
+									key={index}
+									src={data.msg}
+									alt='img'
+									className={`max-h-44 max-w-44 object-contain my-2`}
+								/>
+							) : ''
+						)
 					) : (
 						<MessagesSkeleton />
 					)}
@@ -392,13 +400,13 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 ml-2 hover:bg-green-600'
 					onClick={() => fileRef.current?.click()}
 				>
-					<Paperclip />
+					<Paperclip className='text-md w-5 h-5'/>
 				</button>
 				<button
 					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 m-2 hover:bg-green-600'
 					onClick={() => (file ? sendFile() : sendMessage())}
 				>
-					<Send />
+					<Send className='text-md w-5 h-5'/>
 				</button>
 			</div>
 			<Toaster />
