@@ -1,13 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { setSeconds } from '../utils/LocalStorage';
-
-interface TimerProps {
-	minutes: number;
-	startTimer: boolean;
-	kickOutUsers: () => void
-}
-
+import {TimerProps} from '@/app/utils/Types'
 const Timer = ({ minutes, startTimer, kickOutUsers }: TimerProps) => {
 	const [secondsRemaining, setSecondsRemaining] = useState(minutes * 60);
 

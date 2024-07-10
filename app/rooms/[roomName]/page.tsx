@@ -12,29 +12,14 @@ import {
 	getRoomname,
 	clearStorage,
 } from '@/app/utils/LocalStorage';
-import SendIcon from '@/app/icons/SendIcon';
-import FileIcon from '@/app/icons/FileIcons';
+import { Send, Paperclip, CircleX } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
 import MessagesSkeleton from '@/app/components/MessagesSkeleton';
+import {messageT, responseT, fileT, CustomError} from '../../utils/Types'
 
 export default function Home({ params }: { params: { roomName: string } }) {
-	type messageT = {
-		msg: string;
-		sender: string;
-	};
-
-	type responseT = {
-		_id: string;
-		message: string;
-		username: string;
-		timestamp: string;
-	};
-
-	interface CustomError extends Error {
-		description?: string;
-		context?: any;
-	}
+	
 
 	const router = useRouter();
 
@@ -49,16 +34,18 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const [name, setName] = useState<string | null>('');
 	const [token, setToken] = useState<string | null>('');
 	const [roomName, setRoomName] = useState<string | null>('');
+	const [file, setFile] = useState<fileT | null>();
 	const allowedDocTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    ];
+		'application/pdf',
+		'application/msword',
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+		'application/vnd.ms-powerpoint',
+		'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+		'application/vnd.ms-excel',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	];
 	const allowedImageTypes = ['image/png', 'image/jpeg'];
+	const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -151,7 +138,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('emitMessage', handleMessage);
 
-			socket.on('new-image', (data: string) => {
+			socket.on('new-image', (data: { sender: string; image: string }) => {
 				// setImages((prevImages) => [...prevImages, data]);
 				console.log('UPLOAD Data: ', data);
 			});
@@ -225,6 +212,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	};
 
 	const handleFile = (event: React.ChangeEvent<HTMLInputElement>): void => {
+		setMsgInput('');
 		const file = event.target.files?.[0];
 		if (!file) return;
 		const reader = new FileReader();
@@ -232,21 +220,39 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		reader.onload = (e: ProgressEvent<FileReader>) => {
 			const fileData = e.target?.result as string;
 			const fileType = file.type;
-			
-			if (fileType.startsWith('image/') && !allowedImageTypes.includes(fileType)) {
+
+			if (
+				fileType.startsWith('image/') &&
+				!allowedImageTypes.includes(fileType)
+			) {
 				toast.error('Only PNGs and JPGs are allowed!');
 				return;
 			}
 
-			if (fileType.startsWith('application/') && !allowedDocTypes.includes(fileType)) {
+			if (fileType.startsWith('image/') && file.size >= MAX_IMAGE_SIZE) {
+				toast.error('3MB is max image size.');
+				return;
+			}
+
+			if (
+				fileType.startsWith('application/') &&
+				!allowedDocTypes.includes(fileType)
+			) {
 				toast.error('Invalid document type!');
 				return;
 			}
 
-			console.log("file ", file.name, " \n File data: ", fileData, '\n type: ', fileType);
 			if (fileType.startsWith('image/')) {
-				// socket?.emit('upload-image', { fileName: file.name, fileData });
+				setFile({ name: file.name, type: 'image', data: fileData });
+				// socket?.emit('upload-image', {
+				// 	fileName: file.name,
+				// 	fileData: fileData,
+				// 	room: params.roomName,
+				// 	token: token,
+				// 	sender: name,
+				// });
 			} else if (fileType.startsWith('application')) {
+				setFile({ name: file.name, type: 'doc', data: fileData });
 				// socket?.emit('upload-document', { fileName: file.name, fileData });
 			}
 		};
@@ -267,9 +273,30 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			});
 			setMessage((prevMessage) => [
 				...prevMessage,
-				{ msg: msgInput, sender: name as string },
+				{ msg: msgInput, sender: name as string, type: 'text' },
 			]);
 			setMsgInput('');
+			setFile(null);
+		}
+	};
+
+	const sendFile = (): void => {
+		if (file && socket) {
+			let room = params.roomName;
+			socket?.emit('upload-image', {
+				fileName: file.name,
+				fileData: file.data,
+				room,
+				token: token,
+				sender: name,
+			});
+
+			// setMessage((prevMessage) => [
+			// 	...prevMessage,
+			// 	{ msg: file.data, sender: name as string, type: 'img' },
+			// ]);
+			setMsgInput('');
+			setFile(null);
 		}
 	};
 
@@ -334,16 +361,26 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			</div>
 
 			<div className='flex items-center mb-1 mt-auto'>
-				<input
-					type='text'
-					placeholder='Type a message ...'
-					value={msgInput}
-					onKeyDown={handleKeyDown}
-					onChange={(e: ChangeEvent<HTMLInputElement>) =>
-						setMsgInput(e.target.value)
-					}
-					className='placeholder:italic text-black rounded py-1 px-2 text-lg focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-full tracking-tighter'
-				/>
+				{file ? (
+					<div className='text-lg text-white tracking-tighter w-full border-2 border-gray-500 px-4 py-1 rounded relative'>
+						<CircleX
+							className='absolute -right-2 -top-4 bg-black cursor-pointer'
+							onClick={() => setFile(null)}
+						/>
+						<p>{file.name}</p>
+					</div>
+				) : (
+					<input
+						type='text'
+						placeholder='Type a message ...'
+						value={msgInput}
+						onKeyDown={handleKeyDown}
+						onChange={(e: ChangeEvent<HTMLInputElement>) =>
+							setMsgInput(e.target.value)
+						}
+						className='placeholder:italic text-black rounded py-1 px-2 text-lg focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-full tracking-tighter'
+					/>
+				)}
 
 				<input
 					type='file'
@@ -355,13 +392,13 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 ml-2 hover:bg-green-600'
 					onClick={() => fileRef.current?.click()}
 				>
-					<FileIcon />
+					<Paperclip />
 				</button>
 				<button
 					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 m-2 hover:bg-green-600'
-					onClick={() => sendMessage()}
+					onClick={() => (file ? sendFile() : sendMessage())}
 				>
-					<SendIcon />
+					<Send />
 				</button>
 			</div>
 			<Toaster />

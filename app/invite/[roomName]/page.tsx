@@ -12,12 +12,8 @@ import Button from '@/app/components/Button';
 import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
 import Spinner from '@/app/components/Spinner';
-
+import { CustomError } from '@/app/utils/Types';
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
-	interface CustomError extends Error {
-		description?: string;
-		context?: any;
-	  }
 
 	const router = useRouter();
 	const searchParams = useSearchParams();

@@ -1,12 +1,7 @@
 import React from 'react';
 import Spinner from './Spinner';
+import {ButtonType} from '@/app/utils/Types';
 
-type ButtonType = {
-	buttonText: string,
-	type?: "button" | "reset" | "submit" | undefined;
-	clickFn?: () => void;
-	loading?:boolean
-};
 const Button = ({ buttonText, type, clickFn, loading }: ButtonType) => {
 	return (
 		<button
