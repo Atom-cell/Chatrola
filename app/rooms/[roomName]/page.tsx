@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, ChangeEvent, useRef, RefObject } from 'react';
+import { useEffect, useState, ChangeEvent, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import io, { Socket } from 'socket.io-client';
 import Timer from '../../components/Timer';
@@ -13,6 +13,7 @@ import {
 	clearStorage,
 } from '@/app/utils/LocalStorage';
 import SendIcon from '@/app/icons/SendIcon';
+import FileIcon from '@/app/icons/FileIcons';
 import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
 import MessagesSkeleton from '@/app/components/MessagesSkeleton';
@@ -38,6 +39,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
 
 	const endRef = useRef<null | HTMLDivElement>(null);
+	const fileRef = useRef<null | HTMLInputElement>(null);
 
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
@@ -46,7 +48,17 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const [minutes, setMinutes] = useState<number>();
 	const [name, setName] = useState<string | null>('');
 	const [token, setToken] = useState<string | null>('');
-	const [roomName, setRoomName] = useState<string | null>('')
+	const [roomName, setRoomName] = useState<string | null>('');
+	const allowedDocTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-powerpoint',
+        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    ];
+	const allowedImageTypes = ['image/png', 'image/jpeg'];
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -133,16 +145,26 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	useEffect(() => {
 		if (socket) {
 			const handleMessage = (socketMessage: messageT) => {
-				// console.log(
-				// 	'message array ',
-				// 	message,
-				// 	' from socket messages ',
-				// 	socketMessage
-				// );
-				socketMessage.sender !== name && setMessage((prevMessage) => [...prevMessage, socketMessage]);
+				socketMessage.sender !== name &&
+					setMessage((prevMessage) => [...prevMessage, socketMessage]);
 			};
 
 			socket.on('emitMessage', handleMessage);
+
+			socket.on('new-image', (data: string) => {
+				// setImages((prevImages) => [...prevImages, data]);
+				console.log('UPLOAD Data: ', data);
+			});
+
+			socket.on('new-document', (data: string) => {
+				// setDocuments((prevDocuments) => [...prevDocuments, data]);
+				console.log('UPLOAD Data: ', data);
+			});
+
+			socket.on('upload-error', (error) => {
+				console.error('Upload error:', error.message);
+				// Handle error (e.g., show an error message to the user)
+			});
 
 			// when token is expired
 			socket.on('invalidToken', (response) => {
@@ -172,6 +194,9 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			return () => {
 				socket.off('emitMessage', handleMessage);
+				socket.off('new-image');
+				socket.off('new-document');
+				socket.off('upload-error');
 			};
 		}
 	}, [socket]);
@@ -199,6 +224,36 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		}
 	};
 
+	const handleFile = (event: React.ChangeEvent<HTMLInputElement>): void => {
+		const file = event.target.files?.[0];
+		if (!file) return;
+		const reader = new FileReader();
+
+		reader.onload = (e: ProgressEvent<FileReader>) => {
+			const fileData = e.target?.result as string;
+			const fileType = file.type;
+			
+			if (fileType.startsWith('image/') && !allowedImageTypes.includes(fileType)) {
+				toast.error('Only PNGs and JPGs are allowed!');
+				return;
+			}
+
+			if (fileType.startsWith('application/') && !allowedDocTypes.includes(fileType)) {
+				toast.error('Invalid document type!');
+				return;
+			}
+
+			console.log("file ", file.name, " \n File data: ", fileData, '\n type: ', fileType);
+			if (fileType.startsWith('image/')) {
+				// socket?.emit('upload-image', { fileName: file.name, fileData });
+			} else if (fileType.startsWith('application')) {
+				// socket?.emit('upload-document', { fileName: file.name, fileData });
+			}
+		};
+
+		reader.readAsDataURL(file);
+	};
+
 	//! token expire but time not over.
 	//! set 1 minute room
 	const sendMessage = () => {
@@ -210,7 +265,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				token: token,
 				sender: name,
 			});
-			setMessage((prevMessage) => [...prevMessage, {msg:msgInput, sender:name as string}]);
+			setMessage((prevMessage) => [
+				...prevMessage,
+				{ msg: msgInput, sender: name as string },
+			]);
 			setMsgInput('');
 		}
 	};
@@ -234,12 +292,12 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 	return (
 		<div className='w-full h-full flex flex-col shadow-md '>
-			<div className='flex items-center justify-between'>
+			{/* <div className='flex items-center justify-between'>
 				{minutes && (
 					<Timer
-					minutes={minutes}
-					startTimer={startTimer}
-					kickOutUsers={kickOutUsers}
+						minutes={minutes}
+						startTimer={startTimer}
+						kickOutUsers={kickOutUsers}
 					/>
 				)}
 				<h2 className='md:text-3xl text-base'>{roomName}</h2>
@@ -250,8 +308,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				>
 					Leave
 				</button>
-			</div>
-			{/* <div className='flex flex-col h-full'> */}
+			</div> */}
 
 			<div
 				className='flex flex-col justify-end mt-2 flex-grow'
@@ -287,6 +344,19 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					}
 					className='placeholder:italic text-black rounded py-1 px-2 text-lg focus:ring-2 focus:ring-green-1 focus:outline-none outline-none w-full tracking-tighter'
 				/>
+
+				<input
+					type='file'
+					onChange={handleFile}
+					className='hidden'
+					ref={fileRef}
+				/>
+				<button
+					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 ml-2 hover:bg-green-600'
+					onClick={() => fileRef.current?.click()}
+				>
+					<FileIcon />
+				</button>
 				<button
 					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 m-2 hover:bg-green-600'
 					onClick={() => sendMessage()}
