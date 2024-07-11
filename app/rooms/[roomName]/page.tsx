@@ -352,8 +352,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 									{data.msg}
 								</p>
 							) : data.type === 'img' ? (
-								<>
-								<p className='text-black text-xs'>{`${serverURL}${data.msg}`}</p>
 								<Image
 									key={index}
 									src={`${serverURL}${data.msg}`}
@@ -365,7 +363,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 										data.sender === name ? 'self-end' : ''
 									}`}
 								/>
-								</>
 							) : (
 								''
 							)
