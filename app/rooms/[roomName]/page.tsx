@@ -17,17 +17,17 @@ import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
 import MessagesSkeleton from '@/app/components/MessagesSkeleton';
 import { messageT, responseT, fileT, CustomError } from '../../utils/Types';
-import Image from 'next/image';
-
+import dynamic from 'next/dynamic';
 export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
-
+	const DynamicImage = dynamic(() => import('next/image'));
 	const endRef = useRef<null | HTMLDivElement>(null);
 	const fileRef = useRef<null | HTMLInputElement>(null);
 
 	const [socket, setSocket] = useState<Socket | null>();
 	const [msgInput, setMsgInput] = useState('');
 	const [message, setMessage] = useState<messageT[]>([]);
+	const [messageLoading, setMessageLoading] = useState(false);
 	const [startTimer, setStartTimer] = useState(false);
 	const [minutes, setMinutes] = useState<number>();
 	const [name, setName] = useState<string | null>('');
@@ -53,6 +53,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const getRoomMessages = async () => {
 		const _token = getToken();
 		try {
+			setMessageLoading(true);
 			const getCall = await fetch(`${serverURL}/chat/${params.roomName}`, {
 				method: 'GET',
 				headers: {
@@ -69,9 +70,11 @@ export default function Home({ params }: { params: { roomName: string } }) {
 						return { msg: res.message, sender: res.username, type: res.type };
 					})
 				);
+				setMessageLoading(false)
 			}
 		} catch (error) {
 			console.log('Error in getting messages ', error);
+			setMessageLoading(false)
 		}
 	};
 
@@ -325,11 +328,11 @@ export default function Home({ params }: { params: { roomName: string } }) {
 						kickOutUsers={kickOutUsers}
 					/>
 				)}
-				<h2 className='md:text-3xl text-base'>{roomName}</h2>
+				<h2 className='md:text-3xl text-base text-black'>{roomName}</h2>
 
 				<button
 					onClick={() => leaveRoom()}
-					className='m-4 bg-green-1 w-1/6 rounded py-2 px-1 md:text-xl text-md hover:bg-green-600'
+					className='ml-4 my-4 bg-green-1 w-1/6 rounded py-2 px-1 md:text-xl text-md hover:bg-green-600 float-right'
 				>
 					Leave
 				</button>
@@ -337,10 +340,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			<div
 				className='flex flex-col justify-end mt-2 flex-grow'
-				style={{ maxHeight: '64vh' }}
+				style={{ maxHeight: '66vh' }}
 			>
 				<div className='overflow-y-scroll flex flex-col'>
-					{message ? (
+					{!messageLoading ? (
 						message.map((data, index) =>
 							data.type === 'text' ? (
 								<p
@@ -352,7 +355,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 									{data.msg}
 								</p>
 							) : data.type === 'img' ? (
-								<Image
+								<DynamicImage
 									key={index}
 									src={`${serverURL}${data.msg}`}
 									width={100}
