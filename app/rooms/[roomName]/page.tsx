@@ -62,11 +62,11 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			});
 			const result = await getCall.json();
 
-			console.log(result);
 			if (result) {
+				// console.log(result);
 				setMessage(
 					result.map((res: responseT) => {
-						return { msg: res.message, sender: res.username };
+						return { msg: res.message, sender: res.username, type: res.type };
 					})
 				);
 			}
@@ -137,9 +137,9 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('emitMessage', handleMessage);
 
-			socket.on('new-image', (data: { sender: string; image: string }) => {
-				// setImages((prevImages) => [...prevImages, data]);
-				console.log('UPLOAD Data: ', data);
+			socket.on('new-image', (socketMessage: messageT) => {
+				setMessage((prevMessage) => [...prevMessage, socketMessage]);
+				console.log('socketMessage Data: ', socketMessage);
 			});
 
 			socket.on('new-document', (data: string) => {
@@ -174,7 +174,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('stop-timer', () => {
 				console.log('Stop Timer');
-				toast.error('Your friend left the room 🙁');
+				toast.error("Your friend left the room 🙁. He won't come back");
 				setStartTimer(false);
 			});
 
@@ -210,7 +210,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		}
 	};
 
-	const handleFile = (event: React.ChangeEvent<HTMLInputElement>): void => {
+	const handleFile = (event: ChangeEvent<HTMLInputElement>): void => {
 		setMsgInput('');
 		const file = event.target.files?.[0];
 		if (!file) return;
@@ -243,13 +243,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			if (fileType.startsWith('image/')) {
 				setFile({ name: file.name, type: 'image', data: fileData });
-				// socket?.emit('upload-image', {
-				// 	fileName: file.name,
-				// 	fileData: fileData,
-				// 	room: params.roomName,
-				// 	token: token,
-				// 	sender: name,
-				// });
 			} else if (fileType.startsWith('application')) {
 				setFile({ name: file.name, type: 'doc', data: fileData });
 				// socket?.emit('upload-document', { fileName: file.name, fileData });
@@ -269,6 +262,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				msg: msgInput,
 				token: token,
 				sender: name,
+				type: 'text',
 			});
 			setMessage((prevMessage) => [
 				...prevMessage,
@@ -288,6 +282,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				room,
 				token: token,
 				sender: name,
+				type: 'img',
 			});
 
 			// setMessage((prevMessage) => [
@@ -318,7 +313,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 	return (
 		<div className='w-full h-full flex flex-col shadow-md '>
-			{/* <div className='flex items-center justify-between'>
+			<div className='flex items-center justify-between'>
 				{minutes && (
 					<Timer
 						minutes={minutes}
@@ -334,13 +329,13 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				>
 					Leave
 				</button>
-			</div> */}
+			</div>
 
 			<div
 				className='flex flex-col justify-end mt-2 flex-grow'
 				style={{ maxHeight: '64vh' }}
 			>
-				<div className='overflow-y-scroll flex flex-col h-96'>
+				<div className='overflow-y-scroll flex flex-col'>
 					{message ? (
 						message.map((data, index) =>
 							data.type === 'text' ? (
@@ -355,11 +350,17 @@ export default function Home({ params }: { params: { roomName: string } }) {
 							) : data.type === 'img' ? (
 								<Image
 									key={index}
-									src={data.msg}
+									src={`${serverURL}${data.msg}`}
+									width={100}
+									height={100}
 									alt='img'
-									className={`max-h-44 max-w-44 object-contain my-2`}
+									className={`max-h-44 max-w-44 object-contain my-2 ${
+										data.sender === name ? 'self-end' : ''
+									}`}
 								/>
-							) : ''
+							) : (
+								''
+							)
 						)
 					) : (
 						<MessagesSkeleton />
@@ -400,13 +401,13 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 ml-2 hover:bg-green-600'
 					onClick={() => fileRef.current?.click()}
 				>
-					<Paperclip className='text-md w-5 h-5'/>
+					<Paperclip className='text-md w-5 h-5' />
 				</button>
 				<button
 					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 m-2 hover:bg-green-600'
 					onClick={() => (file ? sendFile() : sendMessage())}
 				>
-					<Send className='text-md w-5 h-5'/>
+					<Send className='text-md w-5 h-5' />
 				</button>
 			</div>
 			<Toaster />

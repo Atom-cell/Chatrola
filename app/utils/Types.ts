@@ -1,7 +1,7 @@
 export type messageT = {
     msg: string;
     sender: string;
-    type: 'text' | 'img';
+    type: 'text' | 'img' | 'doc';
 };
 
 export type responseT = {
@@ -9,6 +9,7 @@ export type responseT = {
     message: string;
     username: string;
     timestamp: string;
+    type: string;
 };
 
 export type fileT = {
