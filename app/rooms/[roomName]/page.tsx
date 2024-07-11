@@ -174,7 +174,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('stop-timer', () => {
 				console.log('Stop Timer');
-				toast.error("Your friend left the room 🙁.");
+				toast.error('Your friend left the room 🙁.');
 				setStartTimer(false);
 			});
 
@@ -311,6 +311,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		socket?.emit('kickout-users', { roomName: params.roomName });
 	};
 
+	const loaderProp = ({ src }: { src: string }) => {
+		return src;
+	};
+
 	return (
 		<div className='w-full h-full flex flex-col shadow-md '>
 			<div className='flex items-center justify-between'>
@@ -348,16 +352,20 @@ export default function Home({ params }: { params: { roomName: string } }) {
 									{data.msg}
 								</p>
 							) : data.type === 'img' ? (
+								<>
+								<p className='text-black text-xs'>{`${serverURL}${data.msg}`}</p>
 								<Image
 									key={index}
 									src={`${serverURL}${data.msg}`}
 									width={100}
 									height={100}
 									alt='img'
+									loader={loaderProp}
 									className={`max-h-44 max-w-44 object-contain my-2 ${
 										data.sender === name ? 'self-end' : ''
 									}`}
 								/>
+								</>
 							) : (
 								''
 							)
