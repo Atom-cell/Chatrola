@@ -17,10 +17,13 @@ import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
 import MessagesSkeleton from '@/app/components/MessagesSkeleton';
 import { messageT, responseT, fileT, CustomError } from '../../utils/Types';
-import dynamic from 'next/dynamic';
+import Image from 'next/image';
+// import ImageModal from '@/app/components/ImageModal';
+import LazyLoad from 'react-lazyload';
+
+
 export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
-	const DynamicImage = dynamic(() => import('next/image'));
 	const endRef = useRef<null | HTMLDivElement>(null);
 	const fileRef = useRef<null | HTMLInputElement>(null);
 
@@ -44,7 +47,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 	];
 	const allowedImageTypes = ['image/png', 'image/jpeg'];
-	const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
+	const MAX_IMAGE_SIZE = 6 * 1024 * 1024;
 
 	useEffect(() => {
 		endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -70,11 +73,11 @@ export default function Home({ params }: { params: { roomName: string } }) {
 						return { msg: res.message, sender: res.username, type: res.type };
 					})
 				);
-				setMessageLoading(false)
+				setMessageLoading(false);
 			}
 		} catch (error) {
 			console.log('Error in getting messages ', error);
-			setMessageLoading(false)
+			setMessageLoading(false);
 		}
 	};
 
@@ -141,7 +144,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			socket.on('emitMessage', handleMessage);
 
 			socket.on('new-image', (socketMessage: messageT) => {
-				setMessage((prevMessage) => [...prevMessage, socketMessage]);
+				socketMessage.sender !== name &&
+					setMessage((prevMessage) => [...prevMessage, socketMessage]);
 				console.log('socketMessage Data: ', socketMessage);
 			});
 
@@ -236,18 +240,18 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				return;
 			}
 
-			if (
-				fileType.startsWith('application/') &&
-				!allowedDocTypes.includes(fileType)
-			) {
-				toast.error('Invalid document type!');
-				return;
-			}
+			// if (
+			// 	fileType.startsWith('application/') &&
+			// 	!allowedDocTypes.includes(fileType)
+			// ) {
+			// 	toast.error('Invalid document type!');
+			// 	return;
+			// }
 
 			if (fileType.startsWith('image/')) {
 				setFile({ name: file.name, type: 'image', data: fileData });
 			} else if (fileType.startsWith('application')) {
-				setFile({ name: file.name, type: 'doc', data: fileData });
+				// setFile({ name: file.name, type: 'doc', data: fileData });
 				// socket?.emit('upload-document', { fileName: file.name, fileData });
 			}
 		};
@@ -288,10 +292,14 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				type: 'img',
 			});
 
-			// setMessage((prevMessage) => [
-			// 	...prevMessage,
-			// 	{ msg: file.data, sender: name as string, type: 'img' },
-			// ]);
+			setMessage((prevMessage) => [
+				...prevMessage,
+				{
+					msg: `/uploads/${room}/${file.name}`,
+					sender: name as string,
+					type: 'img',
+				},
+			]);
 			setMsgInput('');
 			setFile(null);
 		}
@@ -320,6 +328,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 	return (
 		<div className='w-full h-full flex flex-col shadow-md '>
+			{/* <ImageModal/> */}
 			<div className='flex items-center justify-between'>
 				{minutes && (
 					<Timer
@@ -355,17 +364,24 @@ export default function Home({ params }: { params: { roomName: string } }) {
 									{data.msg}
 								</p>
 							) : data.type === 'img' ? (
-								<DynamicImage
+								<a
 									key={index}
-									src={`${serverURL}${data.msg}`}
-									width={100}
-									height={100}
-									alt='img'
-									loader={loaderProp}
-									className={`max-h-44 max-w-44 object-contain my-2 ${
-										data.sender === name ? 'self-end' : ''
-									}`}
-								/>
+									href={`${serverURL}${data.msg}`}
+									target='_blank'
+									className={`${data.sender === name ? 'self-end' : ''}`}
+									rel='noopener noreferrer'
+								>
+									<LazyLoad height={100}>
+										<Image
+											src={`${serverURL}${data.msg}`}
+											width={150}
+											height={150}
+											alt='img'
+											loader={loaderProp}
+											className={`max-h-[20em] max-w-[20em] object-contain my-2`}
+										/>
+									</LazyLoad>
+								</a>
 							) : (
 								''
 							)

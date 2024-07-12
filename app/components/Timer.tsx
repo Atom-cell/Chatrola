@@ -36,7 +36,7 @@ const Timer = ({ minutes, startTimer, kickOutUsers }: TimerProps) => {
 	};
 
 	return (
-		<div className='text-white md:text-5xl text-xl font-bold'>
+		<div className='text-white md:text-5xl text-3xl font-bold'>
 			{formatTime(secondsRemaining)}
 		</div>
 	);

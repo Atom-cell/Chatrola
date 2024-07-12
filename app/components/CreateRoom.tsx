@@ -32,7 +32,7 @@ const CreateRoom = () => {
 
 	const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
 		event.preventDefault();
-		const room = RoomNames[Math.floor(Math.random() * 100)];
+		const room = RoomNames[Math.floor(Math.random() * 99)];
 		setRoomName(room);
 		setError('');
 
