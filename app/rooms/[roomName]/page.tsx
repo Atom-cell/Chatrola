@@ -15,12 +15,13 @@ import {
 import { Send, Paperclip, CircleX } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
+import Spinner from '@/app/components/Spinner';
 import MessagesSkeleton from '@/app/components/MessagesSkeleton';
 import { messageT, responseT, fileT, CustomError } from '../../utils/Types';
 import Image from 'next/image';
 // import ImageModal from '@/app/components/ImageModal';
 import LazyLoad from 'react-lazyload';
-
+import imageCompression from 'browser-image-compression';
 
 export default function Home({ params }: { params: { roomName: string } }) {
 	const router = useRouter();
@@ -36,6 +37,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const [name, setName] = useState<string | null>('');
 	const [token, setToken] = useState<string | null>('');
 	const [roomName, setRoomName] = useState<string | null>('');
+	const [imageProcessLoader, setImageProcessLoader] = useState(false);
 	const [file, setFile] = useState<fileT | null>();
 	const allowedDocTypes = [
 		'application/pdf',
@@ -223,7 +225,8 @@ export default function Home({ params }: { params: { roomName: string } }) {
 		if (!file) return;
 		const reader = new FileReader();
 
-		reader.onload = (e: ProgressEvent<FileReader>) => {
+		reader.onload = async (e: ProgressEvent<FileReader>) => {
+			setImageProcessLoader(!imageProcessLoader);
 			const fileData = e.target?.result as string;
 			const fileType = file.type;
 
@@ -249,7 +252,32 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			// }
 
 			if (fileType.startsWith('image/')) {
-				setFile({ name: file.name, type: 'image', data: fileData });
+				// setFile({ name: file.name, type: 'image', data: fileData });
+				try {
+					// Compression options
+					const options = {
+						maxSizeMB: 2, // Max file size in MB
+						maxWidthOrHeight: 1920, // Max width or height in pixels
+						useWebWorker: true,
+					};
+
+					const compressedFile = await imageCompression(file, options);
+
+					const reader = new FileReader();
+					reader.onload = (e: ProgressEvent<FileReader>) => {
+						const fileData = e.target?.result as string;
+						setFile({
+							name: compressedFile.name,
+							type: 'image',
+							data: fileData,
+						});
+						setImageProcessLoader(false);
+					};
+					reader.readAsDataURL(compressedFile);
+				} catch (error) {
+					console.error('Error compressing image:', error);
+					// Handle error (e.g., set an error state or show a message to the user)
+				}
 			} else if (fileType.startsWith('application')) {
 				// setFile({ name: file.name, type: 'doc', data: fileData });
 				// socket?.emit('upload-document', { fileName: file.name, fileData });
@@ -431,7 +459,11 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					className='flex items-center justify-center py-2 px-4 rounded bg-green-1 ml-2 hover:bg-green-600'
 					onClick={() => (file ? sendFile() : sendMessage())}
 				>
-					<Send className='text-md w-5 h-5' />
+					{imageProcessLoader ? (
+						<Spinner width={5} height={5} />
+					) : (
+						<Send className='text-md w-5 h-5' />
+					)}
 				</button>
 			</div>
 			<Toaster />
