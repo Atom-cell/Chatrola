@@ -129,7 +129,7 @@ const CreateRoom = () => {
 				</span>
 
 				{buttonText !== 'Join Room' ? (
-					<Button buttonText={buttonText} type='submit' loading={loading}/>
+					<Button buttonText={buttonText} type='submit' loading={true}/>
 				) : null}
 				<p className='text-red-500 h-3'>{error}</p>
 			</form>
