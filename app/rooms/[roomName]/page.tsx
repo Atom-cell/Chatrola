@@ -147,7 +147,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			socket.on('emitMessage', handleMessage);
 
 			socket.on('new-image', (socketMessage: messageT) => {
-				socketMessage.sender !== name &&
+				// socketMessage.sender !== name &&
 					setMessage((prevMessage) => [...prevMessage, socketMessage]);
 				console.log('socketMessage Data: ', socketMessage);
 			});
@@ -321,14 +321,14 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				type: 'img',
 			});
 
-			setMessage((prevMessage) => [
-				...prevMessage,
-				{
-					msg: `/uploads/${room}/${file.name}`,
-					sender: name as string,
-					type: 'img',
-				},
-			]);
+			// setMessage((prevMessage) => [
+			// 	...prevMessage,
+			// 	{
+			// 		msg: `/uploads/${room}/${file.name}`,
+			// 		sender: name as string,
+			// 		type: 'img',
+			// 	},
+			// ]);
 			setMsgInput('');
 			setFile(null);
 		}
