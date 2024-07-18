@@ -19,6 +19,7 @@ import Spinner from '@/app/components/Spinner';
 import MessagesSkeleton from '@/app/components/MessagesSkeleton';
 import { messageT, responseT, fileT, CustomError } from '../../utils/Types';
 import Image from 'next/image';
+import Link from 'next/link';
 // import ImageModal from '@/app/components/ImageModal';
 import LazyLoad from 'react-lazyload';
 import imageCompression from 'browser-image-compression';
@@ -392,7 +393,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 									{data.msg}
 								</p>
 							) : data.type === 'img' ? (
-								<a
+								<Link
 									key={index}
 									href={`${serverURL}${data.msg}`}
 									target='_blank'
@@ -409,7 +410,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 											className={`max-h-[20em] max-w-[20em] object-contain my-2`}
 										/>
 									</LazyLoad>
-								</a>
+								</Link>
 							) : (
 								''
 							)

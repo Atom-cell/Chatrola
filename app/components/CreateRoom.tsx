@@ -136,7 +136,11 @@ const CreateRoom = () => {
 			{buttonText === 'Join Room' ? (
 				<Button
 					buttonText={buttonText}
-					clickFn={() => router.push(`/rooms/${roomName}`)}
+					clickFn={() => {
+						setLoading(!loading);
+						router.push(`/rooms/${roomName}`);
+					}}
+					loading={loading}
 				/>
 			) : null}
 			<Toaster />
