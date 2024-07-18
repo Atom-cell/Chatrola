@@ -460,7 +460,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					onClick={() => (file ? sendFile() : sendMessage())}
 				>
 					{imageProcessLoader ? (
-						<Spinner width={5} height={5} />
+						<Spinner width={20} height={20} />
 					) : (
 						<Send className='text-md w-5 h-5' />
 					)}
