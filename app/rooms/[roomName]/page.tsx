@@ -320,7 +320,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				room,
 				token: token,
 				sender: name,
-				type: 'img',
+				type: file.type,
 			});
 
 			setMsgInput('');
@@ -409,11 +409,17 @@ export default function Home({ params }: { params: { roomName: string } }) {
 								<div
 									className={`${
 										data.sender === name ? 'self-end' : ''
-									} max-w-[90%] border-2 border-slate-500 rounded flex gap-x-2 p-2 flex-wrap`}
+									} max-w-[90%] border-2 border-slate-500 rounded flex gap-x-2 p-2 flex-wrap items-center`}
 								>
 									{data.msg.split('/')[3]}{' '}
-									<Link href={`${serverURL}${data.msg}`} target='_blank' download>
-										<ArrowDownToLine className='bg-slate-600 rounded-full '/>
+									<Link
+										href={`${serverURL}${data.msg}`}
+										target='_blank'
+										download
+									>
+										<div className='bg-slate-600 rounded-full p-1'>
+											<ArrowDownToLine />
+										</div>
 									</Link>
 								</div>
 							)
