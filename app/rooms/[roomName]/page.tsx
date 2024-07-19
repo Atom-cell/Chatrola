@@ -272,7 +272,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 						const fileData = e.target?.result as string;
 						setFile({
 							name: compressedFile.name,
-							type: 'image',
+							type: 'img',
 							data: fileData,
 						});
 						setImageProcessLoader(false);
@@ -407,6 +407,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 								</Link>
 							) : (
 								<div
+									key={data.msg}
 									className={`${
 										data.sender === name ? 'self-end' : ''
 									} max-w-[90%] border-2 border-slate-500 rounded flex gap-x-2 p-2 flex-wrap items-center`}
