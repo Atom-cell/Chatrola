@@ -12,7 +12,7 @@ import {
 	getRoomname,
 	clearStorage,
 } from '@/app/utils/LocalStorage';
-import { Send, Paperclip, CircleX } from 'lucide-react';
+import { Send, Paperclip, CircleX, ArrowDownToLine } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
 import Spinner from '@/app/components/Spinner';
@@ -146,7 +146,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('emitMessage', handleMessage);
 
-			socket.on('new-image', (socketMessage: messageT) => {
+			socket.on('new-file', (socketMessage: messageT) => {
 				// socketMessage.sender !== name &&
 				setMessage((prevMessage) => [...prevMessage, socketMessage]);
 				console.log('socketMessage Data: ', socketMessage);
@@ -190,7 +190,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			return () => {
 				socket.off('emitMessage', handleMessage);
-				socket.off('new-image');
+				socket.off('new-file');
 				socket.off('new-document');
 				socket.off('upload-error');
 			};
@@ -284,15 +284,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				}
 			} else if (fileType.startsWith('application')) {
 				setFile({ name: file.name, type: 'doc', data: fileData });
-				let room = params.roomName;
-				socket?.emit('upload-image', {
-					fileName: file.name,
-					fileData,
-					room,
-					token: token,
-					sender: name,
-					type: 'doc',
-				});
+				setImageProcessLoader(false);
 			}
 		};
 
@@ -332,14 +324,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				type: 'img',
 			});
 
-			// setMessage((prevMessage) => [
-			// 	...prevMessage,
-			// 	{
-			// 		msg: `/uploads/${room}/${file.name}`,
-			// 		sender: name as string,
-			// 		type: 'img',
-			// 	},
-			// ]);
 			setMsgInput('');
 			setFile(null);
 		}
@@ -423,7 +407,16 @@ export default function Home({ params }: { params: { roomName: string } }) {
 									</LazyLoad>
 								</Link>
 							) : (
-								''
+								<div
+									className={`${
+										data.sender === name ? 'self-end' : ''
+									} max-w-[90%] border-2 border-slate-500 rounded flex gap-x-2 p-2 flex-wrap`}
+								>
+									{data.msg.split('/')[3]}{' '}
+									<Link href={`${serverURL}${data.msg}`} target='_blank' download>
+										<ArrowDownToLine className='bg-slate-600 rounded-full '/>
+									</Link>
+								</div>
 							)
 						)
 					) : (
