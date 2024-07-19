@@ -191,7 +191,6 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			return () => {
 				socket.off('emitMessage', handleMessage);
 				socket.off('new-file');
-				socket.off('new-document');
 				socket.off('upload-error');
 			};
 		}
@@ -315,7 +314,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 	const sendFile = (): void => {
 		if (file && socket) {
 			let room = params.roomName;
-			socket?.emit('upload-image', {
+			socket?.emit('upload-file', {
 				fileName: file.name,
 				fileData: file.data,
 				room,
