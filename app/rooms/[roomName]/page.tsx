@@ -148,7 +148,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 
 			socket.on('new-image', (socketMessage: messageT) => {
 				// socketMessage.sender !== name &&
-					setMessage((prevMessage) => [...prevMessage, socketMessage]);
+				setMessage((prevMessage) => [...prevMessage, socketMessage]);
 				console.log('socketMessage Data: ', socketMessage);
 			});
 
@@ -244,18 +244,16 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				return;
 			}
 
-			// if (
-			// 	fileType.startsWith('application/') &&
-			// 	!allowedDocTypes.includes(fileType)
-			// ) {
-			// 	toast.error('Invalid document type!');
-			// 	return;
-			// }
+			if (
+				fileType.startsWith('application/') &&
+				!allowedDocTypes.includes(fileType)
+			) {
+				toast.error('Invalid document type!');
+				return;
+			}
 
 			if (fileType.startsWith('image/')) {
-				// setFile({ name: file.name, type: 'image', data: fileData });
 				try {
-					// Compression options
 					const options = {
 						maxSizeMB: 2, // Max file size in MB
 						maxWidthOrHeight: 1920, // Max width or height in pixels
@@ -277,11 +275,10 @@ export default function Home({ params }: { params: { roomName: string } }) {
 					reader.readAsDataURL(compressedFile);
 				} catch (error) {
 					console.error('Error compressing image:', error);
-					// Handle error (e.g., set an error state or show a message to the user)
 				}
 			} else if (fileType.startsWith('application')) {
-				// setFile({ name: file.name, type: 'doc', data: fileData });
-				// socket?.emit('upload-document', { fileName: file.name, fileData });
+				setFile({ name: file.name, type: 'doc', data: fileData });
+				socket?.emit('upload-document', { fileName: file.name, fileData });
 			}
 		};
 
