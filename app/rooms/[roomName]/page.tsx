@@ -231,32 +231,38 @@ export default function Home({ params }: { params: { roomName: string } }) {
 			const fileData = e.target?.result as string;
 			const fileType = file.type;
 
-			if (
-				fileType.startsWith('image/') &&
-				!allowedImageTypes.includes(fileType)
-			) {
-				toast.error('Only PNGs and JPGs are allowed!');
-				return;
-			}
+			if (fileType.startsWith('image/')) {
+				if (!allowedImageTypes.includes(fileType)) {
+					toast.error('Only PNGs and JPGs are allowed!');
+					setImageProcessLoader(false);
+					return;
+				}
 
-			if (fileType.startsWith('image/') && file.size >= MAX_IMAGE_SIZE) {
-				toast.error('3MB is max image size.');
-				return;
-			}
-
-			if (
-				fileType.startsWith('application/') &&
-				!allowedDocTypes.includes(fileType)
+				if (file.size >= MAX_IMAGE_SIZE) {
+					toast.error('7MB is the max image size.');
+					setImageProcessLoader(false);
+					return;
+				}
+			} else if (
+				fileType.startsWith('application/') ||
+				fileType.startsWith('text/')
 			) {
-				toast.error('Invalid document type!');
+				if (!allowedDocTypes.includes(fileType)) {
+					toast.error('Invalid document type!');
+					setImageProcessLoader(false);
+					return;
+				}
+			} else {
+				toast.error('Unsupported file type!');
+				setImageProcessLoader(false);
 				return;
 			}
 
 			if (fileType.startsWith('image/')) {
 				try {
 					const options = {
-						maxSizeMB: 2, // Max file size in MB
-						maxWidthOrHeight: 1920, // Max width or height in pixels
+						maxSizeMB: 2,
+						maxWidthOrHeight: 1920,
 						useWebWorker: true,
 					};
 
@@ -278,7 +284,15 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				}
 			} else if (fileType.startsWith('application')) {
 				setFile({ name: file.name, type: 'doc', data: fileData });
-				socket?.emit('upload-document', { fileName: file.name, fileData });
+				let room = params.roomName;
+				socket?.emit('upload-image', {
+					fileName: file.name,
+					fileData,
+					room,
+					token: token,
+					sender: name,
+					type: 'doc',
+				});
 			}
 		};
 
