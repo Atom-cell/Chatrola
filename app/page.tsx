@@ -8,15 +8,20 @@ const page = () => {
 			<Header />
 			<main className='container mx-auto px-4 pt-5'>
 				<section className='text-center mb-12'>
-					<h2 className='text-4xl font-bold mb-4'>
+					<h2 className='md:text-4xl font-bold mb-4'>
 						Connect Instantly, Chat Meaningfully
 					</h2>
-					<p className='text-xl mb-8'>
+					<p className='md:text-xl mb-8'>
 						Experience focused conversations in timed chat rooms.
 					</p>
-					<button className='bg-green-1 text-black px-6 py-3 rounded-lg text-lg font-semibold'>
+					{/* <button className='bg-green-1 text-black px-6 py-3 rounded-lg text-lg font-semibold'>
 						Get Started
-					</button>
+					</button> */}
+					<Button
+						buttonText='Get Started'
+						loading={false}
+						clickFn={() => alert('k')}
+					/>
 				</section>
 
 				<section className='grid md:grid-cols-3 gap-8 mb-12'>

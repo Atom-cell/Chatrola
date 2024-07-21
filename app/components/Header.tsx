@@ -3,7 +3,7 @@ import ChatrolaIcon from '../icons/Icon';
 
 const Header = () => {
 	return (
-		<header className='container mx-auto px-4 py-6'>
+		<header className='container pl-4 py-6'>
 			<nav className='flex items-center'>
 				<ChatrolaIcon />
 				<h1 className='ml-4'>Chatrola</h1>
