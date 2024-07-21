@@ -1,23 +1,12 @@
 import React from 'react';
-import CreateRoom from './components/CreateRoom';
+import Button from './components/Button';
+import Header from './components/Header';
+
 const page = () => {
 	return (
-		<div className='flex flex-col justify-center items-center w-full h-full space-y-6'>
-			{/* <h3 className='text-slate-200 md:text-4xl text-3xl font-extrabold mb-12'>
-				Create Instant Room
-			</h3>
-			<CreateRoom /> */}
-
-			<header className='container mx-auto px-4 py-6'>
-				<nav className='flex justify-between items-center'>
-					<h1 className='text-2xl font-bold'>QuickChat</h1>
-					<button className='bg-green-1 text-black px-4 py-2 rounded'>
-						Sign Up
-					</button>
-				</nav>
-			</header>
-
-			<main className='container mx-auto px-4 py-12'>
+		<div className='flex flex-col justify-between items-center h-screen'>
+			<Header />
+			<main className='container mx-auto px-4 pt-5'>
 				<section className='text-center mb-12'>
 					<h2 className='text-4xl font-bold mb-4'>
 						Connect Instantly, Chat Meaningfully
@@ -45,7 +34,7 @@ const page = () => {
 					</div>
 				</section>
 
-				<section className='text-center'>
+				{/* <section className='text-center'>
 					<h2 className='text-3xl font-bold mb-4'>Ready to start chatting?</h2>
 					<form className='max-w-md mx-auto'>
 						<input
@@ -61,14 +50,8 @@ const page = () => {
 							Join QuickChat
 						</button>
 					</form>
-				</section>
+				</section> */}
 			</main>
-
-			<footer className='bg-gray-900 mt-12 py-6'>
-				<div className='container mx-auto px-4 text-center'>
-					<p>&copy; 2024 QuickChat. All rights reserved.</p>
-				</div>
-			</footer>
 		</div>
 	);
 };
