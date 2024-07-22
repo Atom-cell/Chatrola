@@ -32,6 +32,6 @@ export interface TimerProps {
 export type ButtonType = {
 	buttonText: string,
 	type?: "button" | "reset" | "submit" | undefined;
-	clickFn?: () => void;
+    clickFn?: (() => void) | (() => Promise<void>);
 	loading?:boolean
 };

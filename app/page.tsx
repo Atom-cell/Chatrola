@@ -1,8 +1,9 @@
 import React from 'react';
-import Button from './components/Button';
 import Header from './components/Header';
+import LandingPageButton from './components/LandingPageButton';
 
-const page = () => {
+const LandingPage = () => {
+
 	return (
 		<div className='flex flex-col justify-between items-center h-screen'>
 			<Header />
@@ -14,14 +15,7 @@ const page = () => {
 					<p className='md:text-xl mb-8'>
 						Experience focused conversations in timed chat rooms.
 					</p>
-					{/* <button className='bg-green-1 text-black px-6 py-3 rounded-lg text-lg font-semibold'>
-						Get Started
-					</button> */}
-					<Button
-						buttonText='Get Started'
-						loading={false}
-						clickFn={() => alert('k')}
-					/>
+					<LandingPageButton />
 				</section>
 
 				<section className='grid md:grid-cols-3 gap-8 mb-12'>
@@ -61,4 +55,4 @@ const page = () => {
 	);
 };
 
-export default page;
+export default LandingPage;
