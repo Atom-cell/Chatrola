@@ -64,3 +64,14 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
 	-moz-appearance: textfield;
 }
+
+
+.shadow {
+	box-shadow: 7px 7px 0px 0px #22c55e;
+	transition: box-shadow 0.2s ease-in-out;
+  }
+  
+  .shadow:hover {
+	box-shadow: 0 0 0 0 #22c55e;;
+  }
+  

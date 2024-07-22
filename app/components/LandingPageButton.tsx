@@ -1,12 +1,22 @@
 'use client';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getRoomname } from '../utils/LocalStorage';
 
 const LandingPageButton = () => {
 	const router = useRouter();
+
+	useEffect(() => {
+		const roomname = getRoomname();
+		if (roomname) router.push(`/rooms/${roomname}`);
+	}, [router]);
+
 	return (
 		<div>
-			<button className='bg-green-1 text-black px-6 py-3 rounded-lg text-lg font-semibold' onClick={() => router.push('/create-room')}>
+			<button
+				className='bg-green-1 text-black px-6 py-3 rounded-lg text-lg font-semibold'
+				onClick={() => router.push('/create-room')}
+			>
 				Get Started
 			</button>
 		</div>
