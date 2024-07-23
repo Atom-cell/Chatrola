@@ -25,7 +25,7 @@ export default function RootLayout({
 		<html lang='en' className='scroll-smooth'>
 			<body className={inter.className}>
 				<main className='flex flex-col h-screen'>
-					{/* <Header /> */}
+					<Header />
 					{children}
 					<Footer />
 					<SpeedInsights />

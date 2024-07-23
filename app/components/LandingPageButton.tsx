@@ -14,7 +14,7 @@ const LandingPageButton = () => {
 	return (
 		<div>
 			<button
-				className='bg-green-1 text-black px-6 py-3 rounded-lg text-lg font-semibold'
+				className='bg-green-1 hover:bg-green-600 text-white px-6 py-3 rounded-lg text-lg font-semibold'
 				onClick={() => router.push('/create-room')}
 			>
 				Get Started
