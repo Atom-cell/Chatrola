@@ -432,7 +432,7 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				</div>
 			</div>
 
-			<div className='flex items-center mb-1 mt-auto'>
+			<div className='flex items-center mb-1 mt-auto pt-1'>
 				{file ? (
 					<div className='text-lg text-white tracking-tighter w-full border-2 border-gray-500 px-4 py-1 rounded relative'>
 						<CircleX

@@ -13,6 +13,8 @@ import toast, { Toaster } from 'react-hot-toast';
 import serverURL from '@/app/utils/ServerURI';
 import Spinner from '@/app/components/Spinner';
 import { CustomError } from '@/app/utils/Types';
+import LayoutWithHeader from '../../components/LayoutWithHeader';
+
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
 
 	const router = useRouter();
@@ -102,28 +104,30 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	};
 
 	return (
-		<div className=' flex flex-col justify-center items-center md:w-11/12 md:h-11/12 w-screen h-screen space-y-6'>
-			<h3 className='text-slate-200 md:text-4xl text-3xl font-extrabold mb-12'>
-				Meeting Invite
-			</h3>
-			<form
-				onSubmit={onSubmit}
-				className=' flex flex-col justify-center items-center'
-			>
-				<input
-					type='text'
-					placeholder='Enter your name'
-					value={username}
-					className='placeholder:italic text-black py-2 px-2 mb-6 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none w-80 md:w-96'
-					onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-						setusername(e.target.value)
-					}
-				/>
-				<Button buttonText='Join Room' type='submit' loading={loading}/>
-				<p className='text-red-500 h-3'>{error}</p>
-			</form>
-			<Toaster />
-		</div>
+		<LayoutWithHeader>
+			<div className=' flex flex-col justify-center items-center md:w-11/12 md:h-11/12 w-screen h-screen space-y-6'>
+				<h3 className='text-slate-200 md:text-4xl text-3xl font-extrabold mb-12'>
+					Meeting Invite
+				</h3>
+				<form
+					onSubmit={onSubmit}
+					className=' flex flex-col justify-center items-center'
+				>
+					<input
+						type='text'
+						placeholder='Enter your name'
+						value={username}
+						className='placeholder:italic text-black py-2 px-2 mb-6 md:text-md rounded focus:ring-2 focus:ring-green-1 focus:outline-none w-80 md:w-96'
+						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+							setusername(e.target.value)
+						}
+					/>
+					<Button buttonText='Join Room' type='submit' loading={loading}/>
+					<p className='text-red-500 h-3'>{error}</p>
+				</form>
+				<Toaster />
+			</div>
+		</LayoutWithHeader>
 	);
 };
 
