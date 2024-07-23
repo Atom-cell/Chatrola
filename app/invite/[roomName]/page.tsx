@@ -16,7 +16,6 @@ import { CustomError } from '@/app/utils/Types';
 import LayoutWithHeader from '../../components/LayoutWithHeader';
 
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
-
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const [username, setusername] = useState('');
@@ -26,12 +25,10 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		console.log('CHecking ---- ');
-
 		const checkInviteExpiration = async () => {
 			const inviteToken = searchParams.get('token') as string;
 			try {
-				setLoading(true)
+				setLoading(true);
 				const checkInviteCall = await fetch(`${serverURL}/invite`, {
 					method: 'GET',
 					headers: {
@@ -58,7 +55,9 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 
 		const username = getUsername();
 		if (username) router.push(`/rooms/${params.roomName}`);
-		else checkInviteExpiration();
+		else {
+			checkInviteExpiration();
+		}
 	}, []);
 
 	const onSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -77,11 +76,11 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 				console.log('Connected to server');
 			});
 
-			newSocket.on("connect_error", (err:CustomError) => {
+			newSocket.on('connect_error', (err: CustomError) => {
 				console.error('Connection error:', err.message);
 				console.error('Error description:', err.description);
 				console.error('Error context:', err.context);
-			  });
+			});
 
 			const minutes = searchParams.get('minutes') as string;
 			newSocket.emit('generate-token', {
@@ -91,7 +90,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 			setMinutes(minutes);
 
 			newSocket.on('token-generated', (token) => {
-				setLoading(false)
+				setLoading(false);
 				setToken(token);
 				setUsername(username);
 				router.push(`/rooms/${params.roomName}`);
@@ -122,7 +121,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 							setusername(e.target.value)
 						}
 					/>
-					<Button buttonText='Join Room' type='submit' loading={loading}/>
+					<Button buttonText='Join Room' type='submit' loading={loading} />
 					<p className='text-red-500 h-3'>{error}</p>
 				</form>
 				<Toaster />
