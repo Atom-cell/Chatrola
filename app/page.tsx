@@ -30,24 +30,6 @@ const LandingPage = () => {
 						<p>Exchange messages, images, and documents seamlessly.</p>
 					</div>
 				</section>
-
-				{/* <section className='text-center'>
-					<h2 className='text-3xl font-bold mb-4'>Ready to start chatting?</h2>
-					<form className='max-w-md mx-auto'>
-						<input
-							type='email'
-							placeholder='Enter your email'
-							className='w-full px-4 py-2 rounded-lg mb-4 text-black'
-							required
-						/>
-						<button
-							type='submit'
-							className='bg-green-1 text-black px-6 py-3 rounded-lg text-lg font-semibold w-full'
-						>
-							Join QuickChat
-						</button>
-					</form>
-				</section> */}
 			</main>
 		</div>
 	);
