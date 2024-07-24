@@ -67,7 +67,7 @@ input[type='number'] {
 
 .shadow {
 	box-shadow: 7px 7px 0px 0px #22c55e;
-	transition: box-shadow 0.2s ease-in-out;
+	transition: box-shadow 0.075s ease-in-out;
 }
 
 .shadow:hover {

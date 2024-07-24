@@ -322,6 +322,14 @@ export default function Home({ params }: { params: { roomName: string } }) {
 				sender: name,
 				type: file.type,
 			});
+			console.log('Sending file: ', {
+				fileName: file.name,
+				fileData: file.data,
+				room,
+				token: token,
+				sender: name,
+				type: file.type,
+			})
 
 			setMsgInput('');
 			setFile(null);
