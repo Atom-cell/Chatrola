@@ -5,7 +5,7 @@ import LayoutWithHeader from './components/LayoutWithHeader';
 const LandingPage = () => {
 	return (
 		<LayoutWithHeader>
-			<div className='flex flex-col justify-center items-center'>
+			<div className='flex flex-col justify-center items-center mt-11 md:mt-0'>
 				{/* <Header /> */}
 				<main className='container my-auto px-4'>
 					<section className='text-center mb-12'>
