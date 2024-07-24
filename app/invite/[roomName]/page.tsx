@@ -14,6 +14,7 @@ import serverURL from '@/app/utils/ServerURI';
 import Spinner from '@/app/components/Spinner';
 import { CustomError } from '@/app/utils/Types';
 import LayoutWithHeader from '../../components/LayoutWithHeader';
+import { User } from 'lucide-react';
 
 const InvitePage = ({ params }: { params: { roomName: string } }) => {
 	const router = useRouter();
@@ -112,7 +113,7 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 					onSubmit={onSubmit}
 					className=' flex flex-col justify-center items-center'
 				>
-					<input
+					{/* <input
 						type='text'
 						placeholder='Enter your name'
 						value={username}
@@ -120,7 +121,21 @@ const InvitePage = ({ params }: { params: { roomName: string } }) => {
 						onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
 							setusername(e.target.value)
 						}
-					/>
+					/> */}
+					<div className='flex justify-center items-center mb-6 focus:ring-2 focus:ring-green-1'>
+						<div className='bg-white p-2 rounded-l border-r border-white'>
+							<User className='text-black text-xl' />
+						</div>
+						<input
+							type='text'
+							placeholder='Enter your name'
+							value={username}
+							className='placeholder:italic text-black p-2 md:text-md rounded-r border-l border-white focus:outline-none w-80 md:w-96'
+							onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+								setusername(e.target.value)
+							}
+						/>
+					</div>
 					<Button buttonText='Join Room' type='submit' loading={loading} />
 					<p className='text-red-500 h-3'>{error}</p>
 				</form>
